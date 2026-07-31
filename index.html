@@ -220,6 +220,11 @@
           <div class="choice" data-val="formal">职场风<small class="ch-desc">专业正式</small></div>
           <div class="choice" data-val="date">约会风<small class="ch-desc">精致有型</small></div>
           <div class="choice" data-val="home">居家风<small class="ch-desc">舒适放松</small></div>
+          <div class="choice" data-val="street">街头<small class="ch-desc">嘻哈潮流</small></div>
+          <div class="choice" data-val="party">聚会<small class="ch-desc">热闹出彩</small></div>
+          <div class="choice" data-val="travel">旅行度假<small class="ch-desc">轻松出行</small></div>
+          <div class="choice" data-val="gala">正式宴会<small class="ch-desc">隆重场合</small></div>
+          <div class="choice" data-val="interview">面试<small class="ch-desc">得体加分</small></div>
         </div>
       </div>
 
@@ -273,15 +278,15 @@
 <script>
   // 占位博主数据 —— 拿到真实抖音博主后替换这里
   const CREATORS = [
-    { name: "穿搭博主A", gender: "male", shapes: ["slim","normal"], styles: ["casual","trend"], desc: "小个子男生穿搭，显高技巧一学就会", avatar: "#1d1d1f", link: "https://www.douyin.com/", tags: ["显高","男生"] },
-    { name: "穿搭博主B", gender: "male", shapes: ["normal","chubby"], styles: ["commute","casual"], desc: "微胖男生成熟通勤风，遮肉又体面", avatar: "#7c6b4f", link: "https://www.douyin.com/", tags: ["微胖","通勤"] },
-    { name: "穿搭博主C", gender: "male", shapes: ["slim","tall"], styles: ["trend","sport"], desc: "高个子潮流运动风，街头感十足", avatar: "#4f6b7c", link: "https://www.douyin.com/", tags: ["高个","潮流"] },
-    { name: "穿搭博主D", gender: "female", shapes: ["slim","normal"], styles: ["casual","trend"], desc: "小个子女生甜酷穿搭，显高显瘦", avatar: "#c06b7c", link: "https://www.douyin.com/", tags: ["小个子","女生"] },
-    { name: "穿搭博主E", gender: "female", shapes: ["normal","chubby"], styles: ["commute","casual"], desc: "微胖女生气质通勤，遮肉不显壮", avatar: "#7c6bc0", link: "https://www.douyin.com/", tags: ["微胖","通勤"] },
-    { name: "穿搭博主F", gender: "female", shapes: ["slim","tall"], styles: ["trend","sport"], desc: "高个子女生活力风，比例气场全开", avatar: "#5ba86b", link: "https://www.douyin.com/", tags: ["高个","运动"] },
+    { name: "穿搭博主A", gender: "male", shapes: ["slim","normal"], styles: ["casual","trend","street","date","party"], desc: "小个子男生穿搭，显高技巧一学就会", avatar: "#1d1d1f", link: "https://www.douyin.com/", tags: ["显高","男生"] },
+    { name: "穿搭博主B", gender: "male", shapes: ["normal","chubby"], styles: ["commute","casual","formal","interview","travel"], desc: "微胖男生成熟通勤风，遮肉又体面", avatar: "#7c6b4f", link: "https://www.douyin.com/", tags: ["微胖","通勤"] },
+    { name: "穿搭博主C", gender: "male", shapes: ["slim","tall"], styles: ["trend","sport","street","party","travel"], desc: "高个子潮流运动风，街头感十足", avatar: "#4f6b7c", link: "https://www.douyin.com/", tags: ["高个","潮流"] },
+    { name: "穿搭博主D", gender: "female", shapes: ["slim","normal"], styles: ["casual","trend","street","date","party"], desc: "小个子女生甜酷穿搭，显高显瘦", avatar: "#c06b7c", link: "https://www.douyin.com/", tags: ["小个子","女生"] },
+    { name: "穿搭博主E", gender: "female", shapes: ["normal","chubby"], styles: ["commute","casual","formal","interview","travel"], desc: "微胖女生气质通勤，遮肉不显壮", avatar: "#7c6bc0", link: "https://www.douyin.com/", tags: ["微胖","通勤"] },
+    { name: "穿搭博主F", gender: "female", shapes: ["slim","tall"], styles: ["trend","sport","street","party","travel","gala"], desc: "高个子女生活力风，比例气场全开", avatar: "#5ba86b", link: "https://www.douyin.com/", tags: ["高个","运动"] },
   ];
 
-  const STYLE_NAMES = { casual: "休闲", commute: "通勤", trend: "潮流", sport: "运动", campus: "学院风", minimal: "简约风", vintage: "复古风", formal: "职场风", date: "约会风", home: "居家风" };
+  const STYLE_NAMES = { casual: "休闲", commute: "通勤", trend: "潮流", sport: "运动", campus: "学院风", minimal: "简约风", vintage: "复古风", formal: "职场风", date: "约会风", home: "居家风", street: "街头", party: "聚会", travel: "旅行度假", gala: "正式宴会", interview: "面试" };
   const SHAPE_NAMES = { slim: "偏瘦", normal: "标准", chubby: "微胖", tall: "高个子" };
   const GENDER_NAMES = { male: "男生", female: "女生" };
 
