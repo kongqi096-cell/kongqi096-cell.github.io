@@ -206,16 +206,6 @@
       </div>
 
       <div class="field">
-        <label>你的体型</label>
-        <div class="choice-group" id="shapeGroup">
-          <div class="choice" data-val="slim">偏瘦<small class="ch-desc">BMI 偏低</small></div>
-          <div class="choice" data-val="normal">标准<small class="ch-desc">身材匀称</small></div>
-          <div class="choice" data-val="chubby">微胖<small class="ch-desc">肉感适中</small></div>
-          <div class="choice" data-val="tall">高个子<small class="ch-desc">身高优势</small></div>
-        </div>
-      </div>
-
-      <div class="field">
         <label>喜欢的风格（可多选）</label>
         <div class="choice-group" id="styleGroup">
           <div class="choice" data-val="casual">休闲<small class="ch-desc">日常舒适</small></div>
@@ -308,17 +298,15 @@
 
   function nextPage() {
     const gender = document.querySelector("#genderGroup .choice.selected");
-    const shape = document.querySelector("#shapeGroup .choice.selected");
     const height = parseFloat(document.getElementById("height").value);
     const weight = parseFloat(document.getElementById("weight").value);
     const styles = [...document.querySelectorAll("#styleGroup .choice.selected")].map(c => c.dataset.val);
 
     if (!gender) { alert("请选择性别"); return; }
     if (!height || !weight) { alert("请填写身高和体重"); return; }
-    if (!shape) { alert("请选择体型"); return; }
     if (styles.length === 0) { alert("请至少选择一个风格"); return; }
 
-    userInfo = { gender: gender.dataset.val, height, weight, shape: shape.dataset.val, styles };
+    userInfo = { gender: gender.dataset.val, height, weight, shape: autoShape(), styles };
     renderResult();
     goPage(1);
   }
@@ -329,6 +317,7 @@
   }
 
   function autoShape() {
+    if (userInfo.height >= 178) return "tall";
     const b = bmi(userInfo.height, userInfo.weight);
     if (b < 18.5) return "slim";
     if (b > 24) return "chubby";
@@ -336,7 +325,7 @@
   }
 
   function renderResult() {
-    const shape = userInfo.shape === "tall" ? (userInfo.height >= 175 ? "tall" : autoShape()) : userInfo.shape;
+    const shape = userInfo.shape;
     const matched = CREATORS.filter(c =>
       c.gender === userInfo.gender &&
       c.shapes.includes(shape) &&
