@@ -1,279 +1,221 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>4D Tesseract - Grab & Move</title>
-    <style>
-        body { margin: 0; overflow: hidden; background: #0a0a1a; color: #fff; font-family: system-ui, sans-serif; }
-        #info {
-            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-            font-size: 14px; opacity: 0.5; pointer-events: none; text-align: center;
-        }
-        #panel {
-            position: absolute; top: 20px; left: 20px;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
-            padding: 16px 20px; border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
-            min-width: 180px;
-            user-select: none; pointer-events: auto;
-        }
-        #panel h3 { margin: 0 0 10px; font-size: 13px; opacity: 0.7; font-weight: 400; letter-spacing: 1px; }
-        .slider-group { margin-bottom: 8px; }
-        .slider-group label { display: block; font-size: 11px; opacity: 0.6; margin-bottom: 2px; }
-        .slider-group input { width: 100%; cursor: pointer; accent-color: #6a5acd; }
-        #reset {
-            margin-top: 4px; padding: 4px 12px; font-size: 11px;
-            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 6px; color: #fff; cursor: pointer; width: 100%;
-        }
-        #reset:hover { background: rgba(255,255,255,0.2); }
-        #mode-hint {
-            position: absolute; top: 20px; right: 20px;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(6px);
-            padding: 10px 14px; border-radius: 8px;
-            font-size: 12px; opacity: 0.7; border: 1px solid rgba(255,255,255,0.08);
-        }
-        #grab-hint {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 18px; opacity: 0; transition: opacity 0.3s;
-            pointer-events: none; color: #aaa;
-        }
-        .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
-        .dot.green { background: #4ade80; }
-        .dot.orange { background: #fb923c; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>穿搭指南 | 不懂穿搭？我们帮你</title>
+<style>
+  :root {
+    --bg: #faf9f7;
+    --ink: #1d1d1f;
+    --muted: #6b6b6f;
+    --accent: #e85d3d;
+    --line: #e8e6e1;
+    --card: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.6;
+  }
+  a { text-decoration: none; color: inherit; }
+
+  /* 导航 */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,249,247,0.85); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav {
+    max-width: 1100px; margin: 0 auto; padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+  .logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 28px; font-size: 15px; }
+  .nav-links a { color: var(--muted); transition: color .2s; }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-cta {
+    background: var(--ink); color: #fff; padding: 8px 18px;
+    border-radius: 999px; font-size: 14px; font-weight: 600;
+    transition: transform .15s, opacity .2s;
+  }
+  .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  /* Hero */
+  .hero {
+    max-width: 1100px; margin: 0 auto; padding: 90px 24px 70px;
+    text-align: center;
+  }
+  .hero-tag {
+    display: inline-block; font-size: 13px; color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 999px;
+    padding: 5px 14px; margin-bottom: 22px; font-weight: 600;
+  }
+  .hero h1 {
+    font-size: clamp(34px, 6vw, 58px); font-weight: 800;
+    letter-spacing: -1.5px; line-height: 1.15; margin-bottom: 20px;
+  }
+  .hero p {
+    max-width: 600px; margin: 0 auto 34px;
+    font-size: 17px; color: var(--muted);
+  }
+  .hero-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    padding: 13px 30px; border-radius: 999px; font-size: 15px; font-weight: 700;
+    transition: transform .15s, opacity .2s; cursor: pointer;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-ghost { border: 1.5px solid var(--ink); color: var(--ink); }
+  .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* 功能入口 */
+  .section { max-width: 1100px; margin: 0 auto; padding: 70px 24px; }
+  .section-head { text-align: center; margin-bottom: 44px; }
+  .section-head h2 { font-size: clamp(26px, 4vw, 36px); font-weight: 800; letter-spacing: -1px; }
+  .section-head p { color: var(--muted); margin-top: 10px; font-size: 15px; }
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .feature {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 18px; padding: 32px 26px;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .feature:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.06); }
+  .feature-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; margin-bottom: 18px;
+  }
+  .f1 { background: #fdeee8; } .f2 { background: #e8f1fd; } .f3 { background: #e9f7ef; }
+  .feature h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .feature p { font-size: 14px; color: var(--muted); }
+
+  /* 内容卡片 */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 18px; overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.06); }
+  .card-thumb { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 48px; }
+  .t1 { background: linear-gradient(135deg, #f6d5c0, #e8a183); }
+  .t2 { background: linear-gradient(135deg, #bdd4ee, #8aa9d4); }
+  .t3 { background: linear-gradient(135deg, #d3e8c9, #9ec5a0); }
+  .card-body { padding: 20px 22px 24px; }
+  .card-body h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .card-body p { font-size: 14px; color: var(--muted); margin-bottom: 14px; }
+  .card-link { font-size: 14px; font-weight: 700; color: var(--accent); }
+
+  /* 页脚 */
+  footer { border-top: 1px solid var(--line); padding: 40px 24px; }
+  .footer-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px; color: var(--muted); font-size: 14px;
+  }
+  .footer-links { display: flex; gap: 20px; }
+  .footer-links a:hover { color: var(--ink); }
+
+  @media (max-width: 860px) {
+    .features, .cards { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .hero { padding-top: 60px; }
+  }
+</style>
 </head>
 <body>
 
-<div id="panel">
-    <h3>4D 旋转控制</h3>
-    <div class="slider-group"><label>XY</label><input type="range" id="rXY" min="-3.14" max="3.14" step="0.01" value="0.8"></div>
-    <div class="slider-group"><label>XZ</label><input type="range" id="rXZ" min="-3.14" max="3.14" step="0.01" value="0"></div>
-    <div class="slider-group"><label>XW</label><input type="range" id="rXW" min="-3.14" max="3.14" step="0.01" value="0.5"></div>
-    <div class="slider-group"><label>YZ</label><input type="range" id="rYZ" min="-3.14" max="3.14" step="0.01" value="0"></div>
-    <div class="slider-group"><label>YW</label><input type="range" id="rYW" min="-3.14" max="3.14" step="0.01" value="0.3"></div>
-    <div class="slider-group"><label>ZW</label><input type="range" id="rZW" min="-3.14" max="3.14" step="0.01" value="0"></div>
-    <button id="reset">重置</button>
-</div>
+<header>
+  <div class="nav">
+    <div class="logo">穿搭<span>指南</span></div>
+    <nav class="nav-links">
+      <a href="#features">智能推荐</a>
+      <a href="#guides">穿搭教程</a>
+      <a href="#body">体型分析</a>
+    </nav>
+    <a href="#features" class="nav-cta">开始搭配</a>
+  </div>
+</header>
 
-<div id="mode-hint">
-    <span class="dot green" id="mode-dot"></span>
-    <span id="mode-text">点击物体抓取</span>
-</div>
+<section class="hero">
+  <div class="hero-tag">不懂穿搭？我们帮你</div>
+  <h1>穿对衣服，<br>比想象中简单</h1>
+  <p>不需要审美天赋，也不用追潮流。告诉我们你的体型、肤色和场合，我们给你能直接照抄的搭配方案。</p>
+  <div class="hero-btns">
+    <a href="#features" class="btn btn-primary">免费测一测</a>
+    <a href="#guides" class="btn btn-ghost">先看教程</a>
+  </div>
+</section>
 
-<div id="info">点击物体 → 拖拽移动 · 空白处拖拽 → 旋转视角 · 滚轮缩放</div>
+<section class="section" id="features">
+  <div class="section-head">
+    <h2>不知道怎么穿？三步搞定</h2>
+    <p>针对你的情况，给出具体可执行的建议</p>
+  </div>
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon f1">👤</div>
+      <h3>体型分析</h3>
+      <p>回答 3 个问题，测出你的体型（矩形/三角形/倒三角），给出最适合的版型与剪裁建议。</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon f2">🎨</div>
+      <h3>肤色配色</h3>
+      <p>判断你的肤色冷暖，避开显黑雷区，推荐适合你的色盘和穿搭公式。</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon f3">📅</div>
+      <h3>场景模板</h3>
+      <p>上班、约会、面试、旅行……按场景一键套用，不用再为"今天穿什么"发愁。</p>
+    </div>
+  </div>
+</section>
 
-<script type="importmap">
-{
-    "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-    }
-}
-</script>
+<section class="section" id="guides">
+  <div class="section-head">
+    <h2>穿搭入门教程</h2>
+    <p>从零开始，几个最实用的知识点</p>
+  </div>
+  <div class="cards">
+    <div class="card">
+      <div class="card-thumb t1">👕</div>
+      <div class="card-body">
+        <h3>男生基础款清单</h3>
+        <p>白T、牛仔裤、帆布鞋……10 件单品搭出 30 套造型，衣柜精简这样买。</p>
+        <a href="#" class="card-link">阅读全文 →</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-thumb t2">👗</div>
+      <div class="card-body">
+        <h3>女生显高穿搭法</h3>
+        <p>腰线、露肤、配色三大技巧，小个子也能穿出比例感。</p>
+        <a href="#" class="card-link">阅读全文 →</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-thumb t3">🎯</div>
+      <div class="card-body">
+        <h3>颜色搭配不出错</h3>
+        <p>三色原则、同色系、基础色打底，教你告别"花里胡哨"。 </p>
+        <a href="#" class="card-link">阅读全文 →</a>
+      </div>
+    </div>
+  </div>
+</section>
 
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+<footer>
+  <div class="footer-inner">
+    <div class="logo" style="font-size:16px;">穿搭<span style="color:var(--accent)">指南</span></div>
+    <div class="footer-links">
+      <a href="#">关于我们</a>
+      <a href="#">联系</a>
+      <a href="#">隐私政策</a>
+    </div>
+  </div>
+</footer>
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position.set(5, 4, 8);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-document.body.appendChild(renderer.domElement);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.08;
-controls.target.set(0, 0, 0);
-
-const V = [];
-for (let i = 0; i < 16; i++) {
-    V.push([
-        (i & 1) ? 1 : -1,
-        (i & 2) ? 1 : -1,
-        (i & 4) ? 1 : -1,
-        (i & 8) ? 1 : -1
-    ]);
-}
-const E = [];
-for (let i = 0; i < 16; i++) {
-    for (let j = i + 1; j < 16; j++) {
-        const d = i ^ j;
-        if ((d & (d - 1)) === 0) E.push([i, j]);
-    }
-}
-
-function rotate4D(v, a1, a2, angle) {
-    if (Math.abs(angle) < 0.001) return v;
-    const r = [...v];
-    const c = Math.cos(angle), s = Math.sin(angle);
-    r[a1] = v[a1] * c - v[a2] * s;
-    r[a2] = v[a1] * s + v[a2] * c;
-    return r;
-}
-
-function project4D(v4) {
-    const d = 3.5 / (3.5 - v4[3]);
-    return [v4[0] * d, v4[1] * d, v4[2] * d];
-}
-
-const lineMaterial = new THREE.LineBasicMaterial({ vertexColors: true });
-const positions = new Float32Array(E.length * 2 * 3);
-const colors = new Float32Array(E.length * 2 * 3);
-const geometry = new THREE.BufferGeometry();
-geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-const mesh = new THREE.LineSegments(geometry, lineMaterial);
-scene.add(mesh);
-
-const tempVertices = new Float32Array(16 * 3);
-
-function update(angles) {
-    for (let i = 0; i < 16; i++) {
-        let v = V[i];
-        v = rotate4D(v, 0, 1, angles.XY);
-        v = rotate4D(v, 0, 2, angles.XZ);
-        v = rotate4D(v, 0, 3, angles.XW);
-        v = rotate4D(v, 1, 2, angles.YZ);
-        v = rotate4D(v, 1, 3, angles.YW);
-        v = rotate4D(v, 2, 3, angles.ZW);
-        const p = project4D(v);
-        tempVertices[i * 3] = p[0];
-        tempVertices[i * 3 + 1] = p[1];
-        tempVertices[i * 3 + 2] = p[2];
-    }
-
-    const pos = geometry.attributes.position.array;
-    const col = geometry.attributes.color.array;
-
-    for (let e = 0; e < E.length; e++) {
-        const i = E[e][0], j = E[e][1];
-        const off = e * 6;
-        pos[off] = tempVertices[i * 3];
-        pos[off + 1] = tempVertices[i * 3 + 1];
-        pos[off + 2] = tempVertices[i * 3 + 2];
-        pos[off + 3] = tempVertices[j * 3];
-        pos[off + 4] = tempVertices[j * 3 + 1];
-        pos[off + 5] = tempVertices[j * 3 + 2];
-
-        const t = (V[i][3] + V[j][3]) / 2;
-        const hue = (t + 1) / 2;
-        const c = new THREE.Color().setHSL(hue * 0.6 + 0.55, 1, 0.5);
-        col[off] = c.r; col[off + 1] = c.g; col[off + 2] = c.b;
-        col[off + 3] = c.r; col[off + 4] = c.g; col[off + 5] = c.b;
-    }
-
-    geometry.attributes.position.needsUpdate = true;
-    geometry.attributes.color.needsUpdate = true;
-}
-
-const angles = { XY: 0.8, XZ: 0, XW: 0.5, YZ: 0, YW: 0.3, ZW: 0 };
-['XY', 'XZ', 'XW', 'YZ', 'YW', 'ZW'].forEach(name => {
-    const el = document.getElementById('r' + name);
-    el.addEventListener('input', () => { angles[name] = parseFloat(el.value); });
-});
-
-document.getElementById('reset').addEventListener('click', () => {
-    ['XY', 'XZ', 'XW', 'YZ', 'YW', 'ZW'].forEach(name => {
-        const v = { XY: 0.8, XZ: 0, XW: 0.5, YZ: 0, YW: 0.3, ZW: 0 }[name];
-        angles[name] = v;
-        document.getElementById('r' + name).value = v;
-    });
-});
-
-// ---- Grab & Move ----
-const raycaster = new THREE.Raycaster();
-const pointer = new THREE.Vector2();
-let isGrabbing = false;
-let grabPlane = new THREE.Plane();
-let grabOffset = new THREE.Vector3();
-let worldPos = new THREE.Vector3();
-let hovered = false;
-
-const modeDot = document.getElementById('mode-dot');
-const modeText = document.getElementById('mode-text');
-
-function updateModeHint() {
-    if (isGrabbing) {
-        modeDot.className = 'dot orange';
-        modeText.textContent = '已抓住 · 拖拽移动';
-    } else if (hovered) {
-        modeDot.className = 'dot green';
-        modeText.textContent = '点击可抓取';
-    } else {
-        modeDot.className = 'dot green';
-        modeText.textContent = '点击物体抓取';
-    }
-}
-
-renderer.domElement.addEventListener('pointerdown', (e) => {
-    const rect = renderer.domElement.getBoundingClientRect();
-    pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-
-    raycaster.setFromCamera(pointer, camera);
-    const intersects = raycaster.intersectObject(mesh);
-
-    if (intersects.length > 0) {
-        controls.enabled = false;
-        isGrabbing = true;
-        grabPlane.setFromNormalAndCoplanarPoint(
-            camera.getWorldDirection(new THREE.Vector3()).negate(),
-            intersects[0].point
-        );
-        mesh.getWorldPosition(worldPos);
-        grabOffset.copy(intersects[0].point).sub(worldPos);
-        updateModeHint();
-    }
-});
-
-window.addEventListener('pointermove', (e) => {
-    const rect = renderer.domElement.getBoundingClientRect();
-    pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-
-    if (isGrabbing) {
-        raycaster.setFromCamera(pointer, camera);
-        const intersect = new THREE.Vector3();
-        raycaster.ray.intersectPlane(grabPlane, intersect);
-        if (intersect) {
-            mesh.position.copy(intersect.sub(grabOffset));
-        }
-    } else {
-        raycaster.setFromCamera(pointer, camera);
-        const intersects = raycaster.intersectObject(mesh);
-        hovered = intersects.length > 0;
-        renderer.domElement.style.cursor = hovered ? 'grab' : 'default';
-        updateModeHint();
-    }
-});
-
-window.addEventListener('pointerup', () => {
-    if (isGrabbing) {
-        isGrabbing = false;
-        controls.enabled = true;
-        renderer.domElement.style.cursor = 'default';
-        updateModeHint();
-    }
-});
-
-function animate() {
-    requestAnimationFrame(animate);
-    update(angles);
-    controls.update();
-    renderer.render(scene, camera);
-}
-
-animate();
-
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
-</script>
 </body>
 </html>
