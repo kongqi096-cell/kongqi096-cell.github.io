@@ -278,12 +278,13 @@
 <script>
   // 占位博主数据 —— 拿到真实抖音博主后替换这里
   const CREATORS = [
-    { name: "穿搭博主A", gender: "male", shapes: ["slim","normal"], styles: ["casual","trend","street","date","party"], desc: "小个子男生穿搭，显高技巧一学就会", avatar: "#1d1d1f", link: "https://www.douyin.com/", tags: ["显高","男生"] },
-    { name: "穿搭博主B", gender: "male", shapes: ["normal","chubby"], styles: ["commute","casual","formal","interview","travel"], desc: "微胖男生成熟通勤风，遮肉又体面", avatar: "#7c6b4f", link: "https://www.douyin.com/", tags: ["微胖","通勤"] },
-    { name: "穿搭博主C", gender: "male", shapes: ["slim","tall"], styles: ["trend","sport","street","party","travel"], desc: "高个子潮流运动风，街头感十足", avatar: "#4f6b7c", link: "https://www.douyin.com/", tags: ["高个","潮流"] },
-    { name: "穿搭博主D", gender: "female", shapes: ["slim","normal"], styles: ["casual","trend","street","date","party"], desc: "小个子女生甜酷穿搭，显高显瘦", avatar: "#c06b7c", link: "https://www.douyin.com/", tags: ["小个子","女生"] },
-    { name: "穿搭博主E", gender: "female", shapes: ["normal","chubby"], styles: ["commute","casual","formal","interview","travel"], desc: "微胖女生气质通勤，遮肉不显壮", avatar: "#7c6bc0", link: "https://www.douyin.com/", tags: ["微胖","通勤"] },
-    { name: "穿搭博主F", gender: "female", shapes: ["slim","tall"], styles: ["trend","sport","street","party","travel","gala"], desc: "高个子女生活力风，比例气场全开", avatar: "#5ba86b", link: "https://www.douyin.com/", tags: ["高个","运动"] },
+    { name: "穿搭博主A", gender: "male", height: 172, shapes: ["slim","normal"], styles: ["casual","trend","street","date","party"], desc: "小个子男生穿搭，显高技巧一学就会", avatar: "#1d1d1f", link: "https://www.douyin.com/", tags: ["显高","男生"] },
+    { name: "穿搭博主B", gender: "male", height: 178, shapes: ["normal","chubby"], styles: ["commute","casual","formal","interview","travel"], desc: "微胖男生成熟通勤风，遮肉又体面", avatar: "#7c6b4f", link: "https://www.douyin.com/", tags: ["微胖","通勤"] },
+    { name: "穿搭博主C", gender: "male", height: 185, shapes: ["slim","tall"], styles: ["trend","sport","street","party","travel"], desc: "高个子潮流运动风，街头感十足", avatar: "#4f6b7c", link: "https://www.douyin.com/", tags: ["高个","潮流"] },
+    { name: "穿搭博主D", gender: "female", height: 155, shapes: ["slim","normal"], styles: ["casual","trend","street","date","party"], desc: "小个子女生甜酷穿搭，显高显瘦", avatar: "#c06b7c", link: "https://www.douyin.com/", tags: ["小个子","女生"] },
+    { name: "穿搭博主E", gender: "female", height: 165, shapes: ["normal","chubby"], styles: ["commute","casual","formal","interview","travel"], desc: "微胖女生气质通勤，遮肉不显壮", avatar: "#7c6bc0", link: "https://www.douyin.com/", tags: ["微胖","通勤"] },
+    { name: "穿搭博主F", gender: "female", height: 172, shapes: ["slim","tall"], styles: ["trend","sport","street","party","travel","gala"], desc: "高个子女生活力风，比例气场全开", avatar: "#5ba86b", link: "https://www.douyin.com/", tags: ["高个","运动"] },
+    { name: "八号机", gender: "unisex", height: 160, shapes: ["normal"], styles: ["street"], desc: "男女通用街头穿搭，中性风酷感十足", avatar: "#c05a4f", link: "https://www.douyin.com/user/buzzlightyear8zz", tags: ["通用","街头"] },
   ];
 
   const STYLE_NAMES = { casual: "休闲", commute: "通勤", trend: "潮流", sport: "运动", campus: "学院风", minimal: "简约风", vintage: "复古风", formal: "职场风", date: "约会风", home: "居家风", street: "街头", party: "聚会", travel: "旅行度假", gala: "正式宴会", interview: "面试" };
@@ -340,11 +341,13 @@
   function renderResult() {
     const shape = userInfo.shape;
     const matched = CREATORS.filter(c =>
-      c.gender === userInfo.gender &&
+      (c.gender === userInfo.gender || c.gender === "unisex") &&
       c.shapes.includes(shape) &&
       c.styles.some(s => userInfo.styles.includes(s))
-    );
-    const fallback = matched.length === 0 ? CREATORS.filter(c => c.gender === userInfo.gender) : matched;
+    ).sort((a, b) => heightScore(a) - heightScore(b));
+    const fallback = matched.length === 0
+      ? CREATORS.filter(c => c.gender === userInfo.gender || c.gender === "unisex").sort((a, b) => heightScore(a) - heightScore(b))
+      : matched;
 
     document.getElementById("resultSummary").textContent =
       `${GENDER_NAMES[userInfo.gender]} · ${SHAPE_NAMES[shape]} · 身高${userInfo.height}cm · 体重${userInfo.weight}kg`;
@@ -358,10 +361,14 @@
         <div class="creator-avatar" style="background:${c.avatar}">${c.name[0]}</div>
         <h3>${c.name}</h3>
         <p class="creator-desc">${c.desc}</p>
-        <div class="creator-meta">${c.tags.map(t => `<span>${t}</span>`).join("")}</div>
+        <div class="creator-meta">${c.tags.map(t => `<span>${t}</span>`).join("")}<span>身高 ${c.height}cm</span></div>
         <a class="creator-link" href="${c.link}" target="_blank" rel="noopener">去抖音看 TA →</a>
       </div>
     `).join("");
+  }
+
+  function heightScore(c) {
+    return Math.abs(c.height - userInfo.height);
   }
 
   function goPage(n) {
