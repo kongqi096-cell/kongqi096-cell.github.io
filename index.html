@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>4D Tesseract - Grab & Move</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #0a0a1a; color: #fff; font-family: system-ui, sans-serif; }
+        #info {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            font-size: 14px; opacity: 0.5; pointer-events: none; text-align: center;
+        }
+        #panel {
+            position: absolute; top: 20px; left: 20px;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            padding: 16px 20px; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            min-width: 180px;
+            user-select: none; pointer-events: auto;
+        }
+        #panel h3 { margin: 0 0 10px; font-size: 13px; opacity: 0.7; font-weight: 400; letter-spacing: 1px; }
+        .slider-group { margin-bottom: 8px; }
+        .slider-group label { display: block; font-size: 11px; opacity: 0.6; margin-bottom: 2px; }
+        .slider-group input { width: 100%; cursor: pointer; accent-color: #6a5acd; }
+        #reset {
+            margin-top: 4px; padding: 4px 12px; font-size: 11px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 6px; color: #fff; cursor: pointer; width: 100%;
+        }
+        #reset:hover { background: rgba(255,255,255,0.2); }
+        #mode-hint {
+            position: absolute; top: 20px; right: 20px;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(6px);
+            padding: 10px 14px; border-radius: 8px;
+            font-size: 12px; opacity: 0.7; border: 1px solid rgba(255,255,255,0.08);
+        }
+        #grab-hint {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 18px; opacity: 0; transition: opacity 0.3s;
+            pointer-events: none; color: #aaa;
+        }
+        .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+        .dot.green { background: #4ade80; }
+        .dot.orange { background: #fb923c; }
+    </style>
+</head>
+<body>
+
+<div id="panel">
+    <h3>4D 旋转控制</h3>
+    <div class="slider-group"><label>XY</label><input type="range" id="rXY" min="-3.14" max="3.14" step="0.01" value="0.8"></div>
+    <div class="slider-group"><label>XZ</label><input type="range" id="rXZ" min="-3.14" max="3.14" step="0.01" value="0"></div>
+    <div class="slider-group"><label>XW</label><input type="range" id="rXW" min="-3.14" max="3.14" step="0.01" value="0.5"></div>
+    <div class="slider-group"><label>YZ</label><input type="range" id="rYZ" min="-3.14" max="3.14" step="0.01" value="0"></div>
+    <div class="slider-group"><label>YW</label><input type="range" id="rYW" min="-3.14" max="3.14" step="0.01" value="0.3"></div>
+    <div class="slider-group"><label>ZW</label><input type="range" id="rZW" min="-3.14" max="3.14" step="0.01" value="0"></div>
+    <button id="reset">重置</button>
+</div>
+
+<div id="mode-hint">
+    <span class="dot green" id="mode-dot"></span>
+    <span id="mode-text">点击物体抓取</span>
+</div>
+
+<div id="info">点击物体 → 拖拽移动 · 空白处拖拽 → 旋转视角 · 滚轮缩放</div>
+
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+camera.position.set(5, 4, 8);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+document.body.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.target.set(0, 0, 0);
+
+const V = [];
+for (let i = 0; i < 16; i++) {
+    V.push([
+        (i & 1) ? 1 : -1,
+        (i & 2) ? 1 : -1,
+        (i & 4) ? 1 : -1,
+        (i & 8) ? 1 : -1
+    ]);
+}
+const E = [];
+for (let i = 0; i < 16; i++) {
+    for (let j = i + 1; j < 16; j++) {
+        const d = i ^ j;
+        if ((d & (d - 1)) === 0) E.push([i, j]);
+    }
+}
+
+function rotate4D(v, a1, a2, angle) {
+    if (Math.abs(angle) < 0.001) return v;
+    const r = [...v];
+    const c = Math.cos(angle), s = Math.sin(angle);
+    r[a1] = v[a1] * c - v[a2] * s;
+    r[a2] = v[a1] * s + v[a2] * c;
+    return r;
+}
+
+function project4D(v4) {
+    const d = 3.5 / (3.5 - v4[3]);
+    return [v4[0] * d, v4[1] * d, v4[2] * d];
+}
+
+const lineMaterial = new THREE.LineBasicMaterial({ vertexColors: true });
+const positions = new Float32Array(E.length * 2 * 3);
+const colors = new Float32Array(E.length * 2 * 3);
+const geometry = new THREE.BufferGeometry();
+geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+const mesh = new THREE.LineSegments(geometry, lineMaterial);
+scene.add(mesh);
+
+const tempVertices = new Float32Array(16 * 3);
+
+function update(angles) {
+    for (let i = 0; i < 16; i++) {
+        let v = V[i];
+        v = rotate4D(v, 0, 1, angles.XY);
+        v = rotate4D(v, 0, 2, angles.XZ);
+        v = rotate4D(v, 0, 3, angles.XW);
+        v = rotate4D(v, 1, 2, angles.YZ);
+        v = rotate4D(v, 1, 3, angles.YW);
+        v = rotate4D(v, 2, 3, angles.ZW);
+        const p = project4D(v);
+        tempVertices[i * 3] = p[0];
+        tempVertices[i * 3 + 1] = p[1];
+        tempVertices[i * 3 + 2] = p[2];
+    }
+
+    const pos = geometry.attributes.position.array;
+    const col = geometry.attributes.color.array;
+
+    for (let e = 0; e < E.length; e++) {
+        const i = E[e][0], j = E[e][1];
+        const off = e * 6;
+        pos[off] = tempVertices[i * 3];
+        pos[off + 1] = tempVertices[i * 3 + 1];
+        pos[off + 2] = tempVertices[i * 3 + 2];
+        pos[off + 3] = tempVertices[j * 3];
+        pos[off + 4] = tempVertices[j * 3 + 1];
+        pos[off + 5] = tempVertices[j * 3 + 2];
+
+        const t = (V[i][3] + V[j][3]) / 2;
+        const hue = (t + 1) / 2;
+        const c = new THREE.Color().setHSL(hue * 0.6 + 0.55, 1, 0.5);
+        col[off] = c.r; col[off + 1] = c.g; col[off + 2] = c.b;
+        col[off + 3] = c.r; col[off + 4] = c.g; col[off + 5] = c.b;
+    }
+
+    geometry.attributes.position.needsUpdate = true;
+    geometry.attributes.color.needsUpdate = true;
+}
+
+const angles = { XY: 0.8, XZ: 0, XW: 0.5, YZ: 0, YW: 0.3, ZW: 0 };
+['XY', 'XZ', 'XW', 'YZ', 'YW', 'ZW'].forEach(name => {
+    const el = document.getElementById('r' + name);
+    el.addEventListener('input', () => { angles[name] = parseFloat(el.value); });
+});
+
+document.getElementById('reset').addEventListener('click', () => {
+    ['XY', 'XZ', 'XW', 'YZ', 'YW', 'ZW'].forEach(name => {
+        const v = { XY: 0.8, XZ: 0, XW: 0.5, YZ: 0, YW: 0.3, ZW: 0 }[name];
+        angles[name] = v;
+        document.getElementById('r' + name).value = v;
+    });
+});
+
+// ---- Grab & Move ----
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+let isGrabbing = false;
+let grabPlane = new THREE.Plane();
+let grabOffset = new THREE.Vector3();
+let worldPos = new THREE.Vector3();
+let hovered = false;
+
+const modeDot = document.getElementById('mode-dot');
+const modeText = document.getElementById('mode-text');
+
+function updateModeHint() {
+    if (isGrabbing) {
+        modeDot.className = 'dot orange';
+        modeText.textContent = '已抓住 · 拖拽移动';
+    } else if (hovered) {
+        modeDot.className = 'dot green';
+        modeText.textContent = '点击可抓取';
+    } else {
+        modeDot.className = 'dot green';
+        modeText.textContent = '点击物体抓取';
+    }
+}
+
+renderer.domElement.addEventListener('pointerdown', (e) => {
+    const rect = renderer.domElement.getBoundingClientRect();
+    pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+    raycaster.setFromCamera(pointer, camera);
+    const intersects = raycaster.intersectObject(mesh);
+
+    if (intersects.length > 0) {
+        controls.enabled = false;
+        isGrabbing = true;
+        grabPlane.setFromNormalAndCoplanarPoint(
+            camera.getWorldDirection(new THREE.Vector3()).negate(),
+            intersects[0].point
+        );
+        mesh.getWorldPosition(worldPos);
+        grabOffset.copy(intersects[0].point).sub(worldPos);
+        updateModeHint();
+    }
+});
+
+window.addEventListener('pointermove', (e) => {
+    const rect = renderer.domElement.getBoundingClientRect();
+    pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+    if (isGrabbing) {
+        raycaster.setFromCamera(pointer, camera);
+        const intersect = new THREE.Vector3();
+        raycaster.ray.intersectPlane(grabPlane, intersect);
+        if (intersect) {
+            mesh.position.copy(intersect.sub(grabOffset));
+        }
+    } else {
+        raycaster.setFromCamera(pointer, camera);
+        const intersects = raycaster.intersectObject(mesh);
+        hovered = intersects.length > 0;
+        renderer.domElement.style.cursor = hovered ? 'grab' : 'default';
+        updateModeHint();
+    }
+});
+
+window.addEventListener('pointerup', () => {
+    if (isGrabbing) {
+        isGrabbing = false;
+        controls.enabled = true;
+        renderer.domElement.style.cursor = 'default';
+        updateModeHint();
+    }
+});
+
+function animate() {
+    requestAnimationFrame(animate);
+    update(angles);
+    controls.update();
+    renderer.render(scene, camera);
+}
+
+animate();
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>
