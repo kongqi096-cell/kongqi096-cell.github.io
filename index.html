@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>穿搭指南 | 不懂穿搭？我们帮你</title>
+<title>穿搭指南 | 找到适合你的穿搭博主</title>
 <style>
   :root {
     --bg: #faf9f7;
@@ -14,114 +14,150 @@
     --card: #ffffff;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
   body {
     font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
     background: var(--bg); color: var(--ink); line-height: 1.6;
   }
   a { text-decoration: none; color: inherit; }
+  button { font-family: inherit; }
 
-  /* 导航 */
+  /* 顶部导航 + 步骤条 */
   header {
     position: sticky; top: 0; z-index: 100;
     background: rgba(250,249,247,0.85); backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--line);
   }
   .nav {
-    max-width: 1100px; margin: 0 auto; padding: 14px 24px;
+    max-width: 900px; margin: 0 auto; padding: 14px 24px;
     display: flex; align-items: center; justify-content: space-between;
   }
-  .logo { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+  .logo { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; cursor: pointer; }
   .logo span { color: var(--accent); }
-  .nav-links { display: flex; gap: 28px; font-size: 15px; }
-  .nav-links a { color: var(--muted); transition: color .2s; }
-  .nav-links a:hover { color: var(--ink); }
-  .nav-cta {
-    background: var(--ink); color: #fff; padding: 8px 18px;
-    border-radius: 999px; font-size: 14px; font-weight: 600;
-    transition: transform .15s, opacity .2s;
+  .steps { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+  .step { display: flex; align-items: center; gap: 6px; }
+  .step-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 1.5px solid var(--line); display: flex; align-items: center;
+    justify-content: center; font-size: 12px; font-weight: 700;
   }
-  .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+  .step.active .step-num { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .step.done .step-num { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .step-label { display: none; }
+  @media (min-width: 640px) { .step-label { display: inline; } }
 
-  /* Hero */
-  .hero {
-    max-width: 1100px; margin: 0 auto; padding: 90px 24px 70px;
-    text-align: center;
+  main { max-width: 900px; margin: 0 auto; padding: 50px 24px 80px; }
+  .page { display: none; }
+  .page.active { display: block; animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+
+  /* 表单 */
+  .form-card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 20px; padding: 36px 32px;
   }
-  .hero-tag {
-    display: inline-block; font-size: 13px; color: var(--accent);
-    border: 1px solid var(--accent); border-radius: 999px;
-    padding: 5px 14px; margin-bottom: 22px; font-weight: 600;
+  .form-card h1 { font-size: 26px; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px; }
+  .form-card > p { color: var(--muted); margin-bottom: 30px; font-size: 15px; }
+  .field { margin-bottom: 26px; }
+  .field > label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+
+  /* 性别/体型/风格 选择 */
+  .choice-group { display: flex; gap: 12px; flex-wrap: wrap; }
+  .choice {
+    flex: 1; min-width: 120px; text-align: center;
+    padding: 16px 12px; border: 1.5px solid var(--line);
+    border-radius: 14px; cursor: pointer; font-size: 15px;
+    background: var(--card); transition: all .15s;
   }
-  .hero h1 {
-    font-size: clamp(34px, 6vw, 58px); font-weight: 800;
-    letter-spacing: -1.5px; line-height: 1.15; margin-bottom: 20px;
+  .choice:hover { border-color: var(--muted); }
+  .choice.selected { border-color: var(--accent); background: #fdeee8; font-weight: 700; }
+  .choice .ch-desc { display: block; font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 4px; }
+  .choice.selected .ch-desc { color: #a3472e; }
+
+  /* 数字输入 */
+  .num-row { display: flex; gap: 16px; }
+  .num-field { flex: 1; }
+  .num-field input {
+    width: 100%; padding: 14px 16px; font-size: 16px;
+    border: 1.5px solid var(--line); border-radius: 14px; outline: none;
+    transition: border-color .15s;
   }
-  .hero p {
-    max-width: 600px; margin: 0 auto 34px;
-    font-size: 17px; color: var(--muted);
-  }
-  .hero-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .num-field input:focus { border-color: var(--accent); }
+  .num-field small { color: var(--muted); font-size: 12px; }
+
   .btn {
-    padding: 13px 30px; border-radius: 999px; font-size: 15px; font-weight: 700;
-    transition: transform .15s, opacity .2s; cursor: pointer;
+    padding: 14px 32px; border-radius: 999px; font-size: 15px;
+    font-weight: 700; cursor: pointer; border: none;
+    transition: opacity .2s, transform .15s;
   }
   .btn-primary { background: var(--accent); color: #fff; }
-  .btn-ghost { border: 1.5px solid var(--ink); color: var(--ink); }
+  .btn-ghost { background: transparent; border: 1.5px solid var(--ink); color: var(--ink); }
   .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-row { display: flex; gap: 12px; margin-top: 8px; }
 
-  /* 功能入口 */
-  .section { max-width: 1100px; margin: 0 auto; padding: 70px 24px; }
-  .section-head { text-align: center; margin-bottom: 44px; }
-  .section-head h2 { font-size: clamp(26px, 4vw, 36px); font-weight: 800; letter-spacing: -1px; }
-  .section-head p { color: var(--muted); margin-top: 10px; font-size: 15px; }
-  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-  .feature {
+  /* 推荐页 */
+  .result-head { text-align: center; margin-bottom: 36px; }
+  .result-head h1 { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
+  .result-head p { color: var(--muted); margin-top: 8px; font-size: 15px; }
+  .result-tags { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+  .result-tag {
+    font-size: 13px; padding: 5px 14px; border-radius: 999px;
+    background: var(--ink); color: #fff; font-weight: 600;
+  }
+
+  .creators { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .creator {
     background: var(--card); border: 1px solid var(--line);
-    border-radius: 18px; padding: 32px 26px;
+    border-radius: 18px; padding: 24px; text-align: center;
     transition: transform .2s, box-shadow .2s;
   }
-  .feature:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.06); }
-  .feature-icon {
-    width: 52px; height: 52px; border-radius: 14px;
+  .creator:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.06); }
+  .creator-avatar {
+    width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 14px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 26px; margin-bottom: 18px;
+    font-size: 32px; color: #fff; font-weight: 800;
   }
-  .f1 { background: #fdeee8; } .f2 { background: #e8f1fd; } .f3 { background: #e9f7ef; }
-  .feature h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-  .feature p { font-size: 14px; color: var(--muted); }
+  .creator h3 { font-size: 17px; font-weight: 700; }
+  .creator .creator-desc { font-size: 13px; color: var(--muted); margin: 6px 0 14px; min-height: 40px; }
+  .creator-meta { font-size: 12px; color: var(--muted); margin-bottom: 16px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+  .creator-meta span {
+    background: var(--bg); padding: 3px 10px; border-radius: 999px;
+    border: 1px solid var(--line);
+  }
+  .creator-link {
+    display: block; padding: 10px 0; border-radius: 999px;
+    background: var(--ink); color: #fff; font-size: 14px; font-weight: 700;
+    transition: opacity .2s;
+  }
+  .creator-link:hover { opacity: 0.85; }
+  .empty { text-align: center; color: var(--muted); padding: 60px 0; }
 
-  /* 内容卡片 */
-  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-  .card {
+  /* 分享页 */
+  .share-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  .share-form { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 28px; }
+  .share-form h2 { font-size: 20px; font-weight: 800; margin-bottom: 18px; }
+  .share-form input, .share-form select, .share-form textarea {
+    width: 100%; padding: 12px 14px; font-size: 14px;
+    border: 1.5px solid var(--line); border-radius: 12px; outline: none;
+    margin-bottom: 14px; font-family: inherit;
+  }
+  .share-form input:focus, .share-form textarea:focus, .share-form select:focus { border-color: var(--accent); }
+  .share-form textarea { resize: vertical; min-height: 80px; }
+  .share-list h2 { font-size: 20px; font-weight: 800; margin-bottom: 18px; }
+  .share-item {
     background: var(--card); border: 1px solid var(--line);
-    border-radius: 18px; overflow: hidden;
-    transition: transform .2s, box-shadow .2s;
+    border-radius: 16px; padding: 18px; margin-bottom: 14px;
   }
-  .card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.06); }
-  .card-thumb { height: 160px; display: flex; align-items: center; justify-content: center; font-size: 48px; }
-  .t1 { background: linear-gradient(135deg, #f6d5c0, #e8a183); }
-  .t2 { background: linear-gradient(135deg, #bdd4ee, #8aa9d4); }
-  .t3 { background: linear-gradient(135deg, #d3e8c9, #9ec5a0); }
-  .card-body { padding: 20px 22px 24px; }
-  .card-body h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
-  .card-body p { font-size: 14px; color: var(--muted); margin-bottom: 14px; }
-  .card-link { font-size: 14px; font-weight: 700; color: var(--accent); }
+  .share-item .si-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .share-item .si-name { font-weight: 700; font-size: 15px; }
+  .share-item .si-tag { font-size: 12px; color: var(--accent); font-weight: 600; }
+  .share-item p { font-size: 14px; color: var(--muted); }
 
-  /* 页脚 */
-  footer { border-top: 1px solid var(--line); padding: 40px 24px; }
-  .footer-inner {
-    max-width: 1100px; margin: 0 auto;
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 16px; color: var(--muted); font-size: 14px;
-  }
-  .footer-links { display: flex; gap: 20px; }
-  .footer-links a:hover { color: var(--ink); }
+  .empty-list { color: var(--muted); text-align: center; padding: 40px 0; }
 
-  @media (max-width: 860px) {
-    .features, .cards { grid-template-columns: 1fr; }
-    .nav-links { display: none; }
-    .hero { padding-top: 60px; }
+  @media (max-width: 760px) {
+    .creators { grid-template-columns: 1fr; }
+    .share-grid { grid-template-columns: 1fr; }
+    .num-row { flex-direction: column; }
   }
 </style>
 </head>
@@ -129,93 +165,247 @@
 
 <header>
   <div class="nav">
-    <div class="logo">穿搭<span>指南</span></div>
-    <nav class="nav-links">
-      <a href="#features">智能推荐</a>
-      <a href="#guides">穿搭教程</a>
-      <a href="#body">体型分析</a>
-    </nav>
-    <a href="#features" class="nav-cta">开始搭配</a>
+    <div class="logo" onclick="goPage(0)">穿搭<span>指南</span></div>
+    <div class="steps">
+      <div class="step active" id="step1"><span class="step-num">1</span><span class="step-label">填写信息</span></div>
+      <span style="color:var(--line)">—</span>
+      <div class="step" id="step2"><span class="step-num">2</span><span class="step-label">博主推荐</span></div>
+      <span style="color:var(--line)">—</span>
+      <div class="step" id="step3"><span class="step-num">3</span><span class="step-label">分享穿搭</span></div>
+    </div>
   </div>
 </header>
 
-<section class="hero">
-  <div class="hero-tag">不懂穿搭？我们帮你</div>
-  <h1>穿对衣服，<br>比想象中简单</h1>
-  <p>不需要审美天赋，也不用追潮流。告诉我们你的体型、肤色和场合，我们给你能直接照抄的搭配方案。</p>
-  <div class="hero-btns">
-    <a href="#features" class="btn btn-primary">免费测一测</a>
-    <a href="#guides" class="btn btn-ghost">先看教程</a>
-  </div>
-</section>
+<main>
+  <!-- 第 1 页：信息填写 -->
+  <section class="page active" id="page0">
+    <div class="form-card">
+      <h1>先了解你，再给你推荐</h1>
+      <p>花 30 秒填一下，我们按你的情况匹配适合的穿搭博主。</p>
 
-<section class="section" id="features">
-  <div class="section-head">
-    <h2>不知道怎么穿？三步搞定</h2>
-    <p>针对你的情况，给出具体可执行的建议</p>
-  </div>
-  <div class="features">
-    <div class="feature">
-      <div class="feature-icon f1">👤</div>
-      <h3>体型分析</h3>
-      <p>回答 3 个问题，测出你的体型（矩形/三角形/倒三角），给出最适合的版型与剪裁建议。</p>
-    </div>
-    <div class="feature">
-      <div class="feature-icon f2">🎨</div>
-      <h3>肤色配色</h3>
-      <p>判断你的肤色冷暖，避开显黑雷区，推荐适合你的色盘和穿搭公式。</p>
-    </div>
-    <div class="feature">
-      <div class="feature-icon f3">📅</div>
-      <h3>场景模板</h3>
-      <p>上班、约会、面试、旅行……按场景一键套用，不用再为"今天穿什么"发愁。</p>
-    </div>
-  </div>
-</section>
+      <div class="field">
+        <label>你的性别</label>
+        <div class="choice-group" id="genderGroup">
+          <div class="choice" data-val="male">👦 男生</div>
+          <div class="choice" data-val="female">👧 女生</div>
+        </div>
+      </div>
 
-<section class="section" id="guides">
-  <div class="section-head">
-    <h2>穿搭入门教程</h2>
-    <p>从零开始，几个最实用的知识点</p>
-  </div>
-  <div class="cards">
-    <div class="card">
-      <div class="card-thumb t1">👕</div>
-      <div class="card-body">
-        <h3>男生基础款清单</h3>
-        <p>白T、牛仔裤、帆布鞋……10 件单品搭出 30 套造型，衣柜精简这样买。</p>
-        <a href="#" class="card-link">阅读全文 →</a>
+      <div class="field">
+        <label>身高 & 体重</label>
+        <div class="num-row">
+          <div class="num-field">
+            <input type="number" id="height" placeholder="身高 (cm)" min="120" max="230">
+            <small>例：170</small>
+          </div>
+          <div class="num-field">
+            <input type="number" id="weight" placeholder="体重 (kg)" min="30" max="200">
+            <small>例：60</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>你的体型</label>
+        <div class="choice-group" id="shapeGroup">
+          <div class="choice" data-val="slim">偏瘦<small class="ch-desc">BMI 偏低</small></div>
+          <div class="choice" data-val="normal">标准<small class="ch-desc">身材匀称</small></div>
+          <div class="choice" data-val="chubby">微胖<small class="ch-desc">肉感适中</small></div>
+          <div class="choice" data-val="tall">高个子<small class="ch-desc">身高优势</small></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>喜欢的风格（可多选）</label>
+        <div class="choice-group" id="styleGroup">
+          <div class="choice" data-val="casual">休闲<small class="ch-desc">日常舒适</small></div>
+          <div class="choice" data-val="commute">通勤<small class="ch-desc">上班上学</small></div>
+          <div class="choice" data-val="trend">潮流<small class="ch-desc">街头个性</small></div>
+          <div class="choice" data-val="sport">运动<small class="ch-desc">活力户外</small></div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="nextPage()">查看推荐 →</button>
       </div>
     </div>
-    <div class="card">
-      <div class="card-thumb t2">👗</div>
-      <div class="card-body">
-        <h3>女生显高穿搭法</h3>
-        <p>腰线、露肤、配色三大技巧，小个子也能穿出比例感。</p>
-        <a href="#" class="card-link">阅读全文 →</a>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-thumb t3">🎯</div>
-      <div class="card-body">
-        <h3>颜色搭配不出错</h3>
-        <p>三色原则、同色系、基础色打底，教你告别"花里胡哨"。 </p>
-        <a href="#" class="card-link">阅读全文 →</a>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 
-<footer>
-  <div class="footer-inner">
-    <div class="logo" style="font-size:16px;">穿搭<span style="color:var(--accent)">指南</span></div>
-    <div class="footer-links">
-      <a href="#">关于我们</a>
-      <a href="#">联系</a>
-      <a href="#">隐私政策</a>
+  <!-- 第 2 页：博主推荐 -->
+  <section class="page" id="page1">
+    <div class="result-head">
+      <h1>为你找到这些博主</h1>
+      <p id="resultSummary">根据你的信息，推荐以下参考风格</p>
+      <div class="result-tags" id="resultTags"></div>
     </div>
-  </div>
-</footer>
+    <div class="creators" id="creatorList"></div>
+    <div class="btn-row" style="justify-content:center; margin-top:40px;">
+      <button class="btn btn-ghost" onclick="goPage(0)">← 重新填写</button>
+      <button class="btn btn-primary" onclick="goPage(2)">分享我的穿搭 →</button>
+    </div>
+  </section>
+
+  <!-- 第 3 页：分享 -->
+  <section class="page" id="page2">
+    <div class="share-grid">
+      <div class="share-form">
+        <h2>分享你的穿搭</h2>
+        <input type="text" id="shareName" placeholder="你的昵称">
+        <select id="shareStyle">
+          <option value="">选择风格</option>
+          <option value="休闲">休闲</option>
+          <option value="通勤">通勤</option>
+          <option value="潮流">潮流</option>
+          <option value="运动">运动</option>
+        </select>
+        <textarea id="shareText" placeholder="介绍你的搭配，比如：宽松白T + 直筒牛仔裤 + 帆布鞋"></textarea>
+        <button class="btn btn-primary" style="width:100%;" onclick="submitShare()">发布分享</button>
+      </div>
+      <div class="share-list">
+        <h2>大家的穿搭</h2>
+        <div id="shareList"></div>
+      </div>
+    </div>
+    <div class="btn-row" style="justify-content:center; margin-top:40px;">
+      <button class="btn btn-ghost" onclick="goPage(1)">← 返回推荐</button>
+    </div>
+  </section>
+</main>
+
+<script>
+  // 占位博主数据 —— 拿到真实抖音博主后替换这里
+  const CREATORS = [
+    { name: "穿搭博主A", gender: "male", shapes: ["slim","normal"], styles: ["casual","trend"], desc: "小个子男生穿搭，显高技巧一学就会", avatar: "#1d1d1f", link: "https://www.douyin.com/", tags: ["显高","男生"] },
+    { name: "穿搭博主B", gender: "male", shapes: ["normal","chubby"], styles: ["commute","casual"], desc: "微胖男生成熟通勤风，遮肉又体面", avatar: "#7c6b4f", link: "https://www.douyin.com/", tags: ["微胖","通勤"] },
+    { name: "穿搭博主C", gender: "male", shapes: ["slim","tall"], styles: ["trend","sport"], desc: "高个子潮流运动风，街头感十足", avatar: "#4f6b7c", link: "https://www.douyin.com/", tags: ["高个","潮流"] },
+    { name: "穿搭博主D", gender: "female", shapes: ["slim","normal"], styles: ["casual","trend"], desc: "小个子女生甜酷穿搭，显高显瘦", avatar: "#c06b7c", link: "https://www.douyin.com/", tags: ["小个子","女生"] },
+    { name: "穿搭博主E", gender: "female", shapes: ["normal","chubby"], styles: ["commute","casual"], desc: "微胖女生气质通勤，遮肉不显壮", avatar: "#7c6bc0", link: "https://www.douyin.com/", tags: ["微胖","通勤"] },
+    { name: "穿搭博主F", gender: "female", shapes: ["slim","tall"], styles: ["trend","sport"], desc: "高个子女生活力风，比例气场全开", avatar: "#5ba86b", link: "https://www.douyin.com/", tags: ["高个","运动"] },
+  ];
+
+  const STYLE_NAMES = { casual: "休闲", commute: "通勤", trend: "潮流", sport: "运动" };
+  const SHAPE_NAMES = { slim: "偏瘦", normal: "标准", chubby: "微胖", tall: "高个子" };
+  const GENDER_NAMES = { male: "男生", female: "女生" };
+
+  let userInfo = { gender: "", height: 0, weight: 0, shape: "", styles: [] };
+  let shares = JSON.parse(localStorage.getItem("shares") || "[]");
+
+  function initChoices() {
+    document.querySelectorAll(".choice-group").forEach(group => {
+      group.addEventListener("click", e => {
+        const c = e.target.closest(".choice");
+        if (!c) return;
+        const multi = c.closest("#styleGroup");
+        if (multi) {
+          c.classList.toggle("selected");
+        } else {
+          c.parentElement.querySelectorAll(".choice").forEach(x => x.classList.remove("selected"));
+          c.classList.add("selected");
+        }
+      });
+    });
+  }
+
+  function nextPage() {
+    const gender = document.querySelector("#genderGroup .choice.selected");
+    const shape = document.querySelector("#shapeGroup .choice.selected");
+    const height = parseFloat(document.getElementById("height").value);
+    const weight = parseFloat(document.getElementById("weight").value);
+    const styles = [...document.querySelectorAll("#styleGroup .choice.selected")].map(c => c.dataset.val);
+
+    if (!gender) { alert("请选择性别"); return; }
+    if (!height || !weight) { alert("请填写身高和体重"); return; }
+    if (!shape) { alert("请选择体型"); return; }
+    if (styles.length === 0) { alert("请至少选择一个风格"); return; }
+
+    userInfo = { gender: gender.dataset.val, height, weight, shape: shape.dataset.val, styles };
+    renderResult();
+    goPage(1);
+  }
+
+  function bmi(height, weight) {
+    const h = height / 100;
+    return weight / (h * h);
+  }
+
+  function autoShape() {
+    const b = bmi(userInfo.height, userInfo.weight);
+    if (b < 18.5) return "slim";
+    if (b > 24) return "chubby";
+    return "normal";
+  }
+
+  function renderResult() {
+    const shape = userInfo.shape === "tall" ? (userInfo.height >= 175 ? "tall" : autoShape()) : userInfo.shape;
+    const matched = CREATORS.filter(c =>
+      c.gender === userInfo.gender &&
+      c.shapes.includes(shape) &&
+      c.styles.some(s => userInfo.styles.includes(s))
+    );
+    const fallback = matched.length === 0 ? CREATORS.filter(c => c.gender === userInfo.gender) : matched;
+
+    document.getElementById("resultSummary").textContent =
+      `${GENDER_NAMES[userInfo.gender]} · ${SHAPE_NAMES[shape]} · 身高${userInfo.height}cm · 体重${userInfo.weight}kg`;
+
+    const tags = document.getElementById("resultTags");
+    tags.innerHTML = userInfo.styles.map(s => `<span class="result-tag">${STYLE_NAMES[s]}</span>`).join("");
+
+    const list = document.getElementById("creatorList");
+    list.innerHTML = fallback.map((c, i) => `
+      <div class="creator">
+        <div class="creator-avatar" style="background:${c.avatar}">${c.name[0]}</div>
+        <h3>${c.name}</h3>
+        <p class="creator-desc">${c.desc}</p>
+        <div class="creator-meta">${c.tags.map(t => `<span>${t}</span>`).join("")}</div>
+        <a class="creator-link" href="${c.link}" target="_blank" rel="noopener">去抖音看 TA →</a>
+      </div>
+    `).join("");
+  }
+
+  function goPage(n) {
+    document.querySelectorAll(".page").forEach((p, i) => p.classList.toggle("active", i === n));
+    document.querySelectorAll(".step").forEach((s, i) => {
+      s.classList.toggle("active", i === n);
+      s.classList.toggle("done", i < n);
+    });
+    window.scrollTo({ top: 0 });
+  }
+
+  function submitShare() {
+    const name = document.getElementById("shareName").value.trim();
+    const style = document.getElementById("shareStyle").value;
+    const text = document.getElementById("shareText").value.trim();
+    if (!name || !style || !text) { alert("请填写完整再发布"); return; }
+
+    shares.unshift({ name, style, text, time: new Date().toLocaleDateString() });
+    localStorage.setItem("shares", JSON.stringify(shares));
+    document.getElementById("shareName").value = "";
+    document.getElementById("shareStyle").value = "";
+    document.getElementById("shareText").value = "";
+    renderShares();
+  }
+
+  function renderShares() {
+    const list = document.getElementById("shareList");
+    if (shares.length === 0) {
+      list.innerHTML = `<div class="empty-list">还没有分享，来发第一条吧 🎉</div>`;
+      return;
+    }
+    list.innerHTML = shares.map(s => `
+      <div class="share-item">
+        <div class="si-head">
+          <span class="si-name">${s.name}</span>
+          <span class="si-tag">${s.style}</span>
+        </div>
+        <p>${s.text}</p>
+        <small style="color:var(--muted)">${s.time}</small>
+      </div>
+    `).join("");
+  }
+
+  initChoices();
+  renderShares();
+</script>
 
 </body>
 </html>
