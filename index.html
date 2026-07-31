@@ -62,6 +62,7 @@
 
   /* 性别/体型/风格 选择 */
   .choice-group { display: flex; gap: 12px; flex-wrap: wrap; }
+  #styleGroup .choice { flex: 0 0 calc((100% - 48px) / 5); }
   .choice {
     flex: 1; min-width: 120px; text-align: center;
     padding: 16px 12px; border: 1.5px solid var(--line);
@@ -158,6 +159,7 @@
     .creators { grid-template-columns: 1fr; }
     .share-grid { grid-template-columns: 1fr; }
     .num-row { flex-direction: column; }
+    #styleGroup .choice { flex: 0 0 calc((100% - 12px) / 2); }
   }
 </style>
 </head>
