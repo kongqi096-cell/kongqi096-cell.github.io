@@ -104,23 +104,24 @@
   #styleGroup .choice { flex: 0 0 calc((100% - 48px) / 5); }
   .choice {
     flex: 1; min-width: 120px; text-align: center;
-    padding: 17px 12px; border: 1.5px solid var(--line);
-    border-radius: 16px; cursor: pointer; font-size: 15px;
+    padding: 14px 10px; border: 1.5px solid var(--line);
+    border-radius: 16px; cursor: pointer; font-size: 14px;
     background: var(--card); transition: all .18s ease;
     position: relative; overflow: hidden;
   }
-  .choice::after {
-    content: ""; position: absolute; inset: 0; border-radius: 16px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    opacity: 0; transition: opacity .2s; z-index: -1;
+  .choice .choice-emoji {
+    display: block; font-size: 26px; margin-bottom: 6px;
+    filter: grayscale(20%); transition: transform .2s;
   }
   .choice:hover { border-color: var(--accent2); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(255,138,92,0.15); }
+  .choice:hover .choice-emoji { transform: scale(1.15); }
   .choice.selected {
     border-color: transparent; color: #fff; font-weight: 700;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
     box-shadow: 0 8px 20px rgba(255,90,78,0.3);
   }
-  .choice .ch-desc { display: block; font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 4px; transition: color .2s; }
+  .choice.selected .choice-emoji { transform: scale(1.1); filter: grayscale(0%); }
+  .choice .ch-desc { display: block; font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 2px; transition: color .2s; }
   .choice.selected .ch-desc { color: rgba(255,255,255,0.85); }
 
   /* 数字输入 */
@@ -290,21 +291,21 @@
       <div class="field">
         <label>喜欢的风格（可多选）</label>
         <div class="choice-group" id="styleGroup">
-          <div class="choice" data-val="casual">休闲<small class="ch-desc">日常舒适</small></div>
-          <div class="choice" data-val="commute">通勤<small class="ch-desc">上班上学</small></div>
-          <div class="choice" data-val="trend">潮流<small class="ch-desc">街头个性</small></div>
-          <div class="choice" data-val="sport">运动<small class="ch-desc">活力户外</small></div>
-          <div class="choice" data-val="campus">学院风<small class="ch-desc">青春校园</small></div>
-          <div class="choice" data-val="minimal">简约风<small class="ch-desc">干净利落</small></div>
-          <div class="choice" data-val="vintage">复古风<small class="ch-desc">怀旧质感</small></div>
-          <div class="choice" data-val="formal">职场风<small class="ch-desc">专业正式</small></div>
-          <div class="choice" data-val="date">约会风<small class="ch-desc">精致有型</small></div>
-          <div class="choice" data-val="home">居家风<small class="ch-desc">舒适放松</small></div>
-          <div class="choice" data-val="street">街头<small class="ch-desc">嘻哈潮流</small></div>
-          <div class="choice" data-val="party">聚会<small class="ch-desc">热闹出彩</small></div>
-          <div class="choice" data-val="travel">旅行度假<small class="ch-desc">轻松出行</small></div>
-          <div class="choice" data-val="gala">正式宴会<small class="ch-desc">隆重场合</small></div>
-          <div class="choice" data-val="interview">面试<small class="ch-desc">得体加分</small></div>
+          <div class="choice" data-val="casual"><span class="choice-emoji">👕</span>休闲<small class="ch-desc">日常舒适</small></div>
+          <div class="choice" data-val="commute"><span class="choice-emoji">💼</span>通勤<small class="ch-desc">上班上学</small></div>
+          <div class="choice" data-val="trend"><span class="choice-emoji">🕶️</span>潮流<small class="ch-desc">街头个性</small></div>
+          <div class="choice" data-val="sport"><span class="choice-emoji">🏃</span>运动<small class="ch-desc">活力户外</small></div>
+          <div class="choice" data-val="campus"><span class="choice-emoji">🎓</span>学院风<small class="ch-desc">青春校园</small></div>
+          <div class="choice" data-val="minimal"><span class="choice-emoji">🤍</span>简约风<small class="ch-desc">干净利落</small></div>
+          <div class="choice" data-val="vintage"><span class="choice-emoji">🕰️</span>复古风<small class="ch-desc">怀旧质感</small></div>
+          <div class="choice" data-val="formal"><span class="choice-emoji">🤵</span>职场风<small class="ch-desc">专业正式</small></div>
+          <div class="choice" data-val="date"><span class="choice-emoji">🌹</span>约会风<small class="ch-desc">精致有型</small></div>
+          <div class="choice" data-val="home"><span class="choice-emoji">🛋️</span>居家风<small class="ch-desc">舒适放松</small></div>
+          <div class="choice" data-val="street"><span class="choice-emoji">🛹</span>街头<small class="ch-desc">嘻哈潮流</small></div>
+          <div class="choice" data-val="party"><span class="choice-emoji">🎉</span>聚会<small class="ch-desc">热闹出彩</small></div>
+          <div class="choice" data-val="travel"><span class="choice-emoji">✈️</span>旅行度假<small class="ch-desc">轻松出行</small></div>
+          <div class="choice" data-val="gala"><span class="choice-emoji">👑</span>正式宴会<small class="ch-desc">隆重场合</small></div>
+          <div class="choice" data-val="interview"><span class="choice-emoji">📋</span>面试<small class="ch-desc">得体加分</small></div>
         </div>
       </div>
 
