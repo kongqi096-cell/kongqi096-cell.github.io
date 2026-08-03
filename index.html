@@ -6,160 +6,240 @@
 <title>穿搭指南 | 找到适合你的穿搭博主</title>
 <style>
   :root {
-    --bg: #faf9f7;
-    --ink: #1d1d1f;
-    --muted: #6b6b6f;
-    --accent: #e85d3d;
-    --line: #e8e6e1;
+    --bg: #f7f5f2;
+    --ink: #232326;
+    --muted: #8a8a8f;
+    --accent: #ff5a4e;
+    --accent2: #ff8a5c;
+    --line: #ece9e4;
     --card: #ffffff;
+    --shadow: 0 10px 30px rgba(35,35,38,0.08);
+    --shadow-hover: 0 16px 40px rgba(35,35,38,0.14);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
     background: var(--bg); color: var(--ink); line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
   a { text-decoration: none; color: inherit; }
   button { font-family: inherit; }
 
+  /* 背景装饰光晕 */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(600px 400px at 10% -10%, rgba(255,138,92,0.12), transparent 70%),
+      radial-gradient(500px 350px at 110% 15%, rgba(255,90,78,0.10), transparent 70%),
+      radial-gradient(700px 500px at 50% 120%, rgba(120,140,255,0.06), transparent 70%);
+  }
+
   /* 顶部导航 + 步骤条 */
   header {
     position: sticky; top: 0; z-index: 100;
-    background: rgba(250,249,247,0.85); backdrop-filter: blur(12px);
+    background: rgba(247,245,242,0.82); backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--line);
   }
   .nav {
-    max-width: 900px; margin: 0 auto; padding: 14px 24px;
+    max-width: 940px; margin: 0 auto; padding: 14px 24px;
     display: flex; align-items: center; justify-content: space-between;
   }
-  .logo { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; cursor: pointer; }
+  .logo {
+    font-size: 20px; font-weight: 800; letter-spacing: -0.5px; cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo-icon {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 16px; box-shadow: 0 4px 10px rgba(255,90,78,0.35);
+  }
   .logo span { color: var(--accent); }
   .steps { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
-  .step { display: flex; align-items: center; gap: 6px; }
+  .step { display: flex; align-items: center; gap: 6px; transition: color .2s; }
   .step-num {
-    width: 22px; height: 22px; border-radius: 50%;
+    width: 24px; height: 24px; border-radius: 50%;
     border: 1.5px solid var(--line); display: flex; align-items: center;
     justify-content: center; font-size: 12px; font-weight: 700;
+    transition: all .25s; background: var(--card);
   }
-  .step.active .step-num { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .step.done .step-num { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .step.active { color: var(--ink); font-weight: 600; }
+  .step.active .step-num {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-color: transparent; color: #fff; box-shadow: 0 3px 8px rgba(255,90,78,0.35);
+  }
+  .step.done { color: var(--muted); }
+  .step.done .step-num {
+    background: var(--ink); border-color: var(--ink); color: #fff;
+  }
+  .step-divider { color: var(--line); }
   .step-label { display: none; }
   @media (min-width: 640px) { .step-label { display: inline; } }
 
-  main { max-width: 900px; margin: 0 auto; padding: 50px 24px 80px; }
+  main { max-width: 940px; margin: 0 auto; padding: 46px 24px 90px; }
   .page { display: none; }
-  .page.active { display: block; animation: fadeIn .3s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+  .page.active { display: block; animation: pageIn .35s cubic-bezier(.2,.8,.3,1); }
+  @keyframes pageIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 
-  /* 表单 */
+  /* 表单卡片 */
   .form-card {
     background: var(--card); border: 1px solid var(--line);
-    border-radius: 20px; padding: 36px 32px;
+    border-radius: 24px; padding: 40px 36px;
+    box-shadow: var(--shadow);
   }
-  .form-card h1 { font-size: 26px; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px; }
-  .form-card > p { color: var(--muted); margin-bottom: 30px; font-size: 15px; }
-  .field { margin-bottom: 26px; }
-  .field > label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+  .form-card h1 {
+    font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--ink), #555);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .form-card > p { color: var(--muted); margin-bottom: 32px; font-size: 15px; }
+  .field { margin-bottom: 28px; }
+  .field > label {
+    display: block; font-size: 14px; font-weight: 700; margin-bottom: 12px;
+    letter-spacing: 0.2px;
+  }
 
-  /* 性别/体型/风格 选择 */
+  /* 选择按钮 */
   .choice-group { display: flex; gap: 12px; flex-wrap: wrap; }
   #styleGroup .choice { flex: 0 0 calc((100% - 48px) / 5); }
   .choice {
     flex: 1; min-width: 120px; text-align: center;
-    padding: 16px 12px; border: 1.5px solid var(--line);
-    border-radius: 14px; cursor: pointer; font-size: 15px;
-    background: var(--card); transition: all .15s;
+    padding: 17px 12px; border: 1.5px solid var(--line);
+    border-radius: 16px; cursor: pointer; font-size: 15px;
+    background: var(--card); transition: all .18s ease;
+    position: relative; overflow: hidden;
   }
-  .choice:hover { border-color: var(--muted); }
-  .choice.selected { border-color: var(--accent); background: #fdeee8; font-weight: 700; }
-  .choice .ch-desc { display: block; font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 4px; }
-  .choice.selected .ch-desc { color: #a3472e; }
+  .choice::after {
+    content: ""; position: absolute; inset: 0; border-radius: 16px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    opacity: 0; transition: opacity .2s; z-index: -1;
+  }
+  .choice:hover { border-color: var(--accent2); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(255,138,92,0.15); }
+  .choice.selected {
+    border-color: transparent; color: #fff; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    box-shadow: 0 8px 20px rgba(255,90,78,0.3);
+  }
+  .choice .ch-desc { display: block; font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 4px; transition: color .2s; }
+  .choice.selected .ch-desc { color: rgba(255,255,255,0.85); }
 
   /* 数字输入 */
   .num-row { display: flex; gap: 16px; }
   .num-field { flex: 1; }
   .num-field input {
-    width: 100%; padding: 14px 16px; font-size: 16px;
-    border: 1.5px solid var(--line); border-radius: 14px; outline: none;
-    transition: border-color .15s;
+    width: 100%; padding: 15px 16px; font-size: 16px;
+    border: 1.5px solid var(--line); border-radius: 16px; outline: none;
+    transition: all .2s; background: #fbfaf8;
   }
-  .num-field input:focus { border-color: var(--accent); }
+  .num-field input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 4px rgba(255,90,78,0.08); }
   .num-field small { color: var(--muted); font-size: 12px; }
 
+  /* 按钮 */
   .btn {
-    padding: 14px 32px; border-radius: 999px; font-size: 15px;
+    padding: 15px 34px; border-radius: 999px; font-size: 15px;
     font-weight: 700; cursor: pointer; border: none;
-    transition: opacity .2s, transform .15s;
+    transition: all .2s ease;
   }
-  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; box-shadow: 0 8px 20px rgba(255,90,78,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(255,90,78,0.4); }
   .btn-ghost { background: transparent; border: 1.5px solid var(--ink); color: var(--ink); }
-  .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-  .btn-row { display: flex; gap: 12px; margin-top: 8px; }
+  .btn-ghost:hover { background: var(--ink); color: #fff; transform: translateY(-2px); }
+  .btn-row { display: flex; gap: 12px; margin-top: 10px; }
 
   /* 推荐页 */
-  .result-head { text-align: center; margin-bottom: 36px; }
-  .result-head h1 { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
-  .result-head p { color: var(--muted); margin-top: 8px; font-size: 15px; }
-  .result-tags { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+  .result-head { text-align: center; margin-bottom: 40px; }
+  .result-head h1 {
+    font-size: 30px; font-weight: 800; letter-spacing: -1px;
+    background: linear-gradient(135deg, var(--ink), #555);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .result-head p { color: var(--muted); margin-top: 10px; font-size: 15px; }
+  .result-tags { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
   .result-tag {
-    font-size: 13px; padding: 5px 14px; border-radius: 999px;
-    background: var(--ink); color: #fff; font-weight: 600;
+    font-size: 13px; padding: 6px 16px; border-radius: 999px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; font-weight: 600; box-shadow: 0 4px 10px rgba(255,90,78,0.25);
   }
 
   .creators { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
   .creator {
     background: var(--card); border: 1px solid var(--line);
-    border-radius: 18px; padding: 24px; text-align: center;
-    transition: transform .2s, box-shadow .2s;
+    border-radius: 20px; padding: 28px 22px; text-align: center;
+    transition: all .25s ease; position: relative;
   }
-  .creator:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.06); }
+  .creator::before {
+    content: ""; position: absolute; top: 0; left: 20px; right: 20px; height: 3px;
+    border-radius: 0 0 4px 4px; background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: 0; transition: opacity .25s;
+  }
+  .creator:hover { transform: translateY(-6px); box-shadow: var(--shadow-hover); }
+  .creator:hover::before { opacity: 1; }
   .creator-avatar {
-    width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 14px;
+    width: 78px; height: 78px; border-radius: 50%; margin: 0 auto 16px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 32px; color: #fff; font-weight: 800;
+    font-size: 34px; color: #fff; font-weight: 800;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+    background: linear-gradient(135deg, #ff5a4e, #ff8a5c);
   }
-  .creator h3 { font-size: 17px; font-weight: 700; }
-  .creator .creator-desc { font-size: 13px; color: var(--muted); margin: 6px 0 14px; min-height: 40px; }
-  .creator-meta { font-size: 12px; color: var(--muted); margin-bottom: 16px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+  .creator h3 { font-size: 17px; font-weight: 800; }
+  .creator .creator-desc { font-size: 13px; color: var(--muted); margin: 8px 0 16px; min-height: 40px; }
+  .creator-meta { font-size: 12px; color: var(--muted); margin-bottom: 18px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
   .creator-meta span {
-    background: var(--bg); padding: 3px 10px; border-radius: 999px;
-    border: 1px solid var(--line);
+    background: #f5f3ef; padding: 4px 12px; border-radius: 999px;
+    border: 1px solid var(--line); font-weight: 600;
   }
+  .creator-meta .height-tag { color: var(--accent); }
   .creator-link {
-    display: block; padding: 10px 0; border-radius: 999px;
+    display: block; padding: 12px 0; border-radius: 999px;
     background: var(--ink); color: #fff; font-size: 14px; font-weight: 700;
-    transition: opacity .2s;
+    transition: all .2s; letter-spacing: 0.3px;
   }
-  .creator-link:hover { opacity: 0.85; }
+  .creator-link:hover { background: linear-gradient(135deg, var(--accent), var(--accent2)); }
   .empty { text-align: center; color: var(--muted); padding: 60px 0; }
 
   /* 分享页 */
   .share-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
-  .share-form { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 28px; }
-  .share-form h2 { font-size: 20px; font-weight: 800; margin-bottom: 18px; }
-  .share-form input, .share-form select, .share-form textarea {
-    width: 100%; padding: 12px 14px; font-size: 14px;
-    border: 1.5px solid var(--line); border-radius: 12px; outline: none;
-    margin-bottom: 14px; font-family: inherit;
+  .share-form {
+    background: var(--card); border: 1px solid var(--line); border-radius: 22px;
+    padding: 30px; box-shadow: var(--shadow);
   }
-  .share-form input:focus, .share-form textarea:focus, .share-form select:focus { border-color: var(--accent); }
-  .share-form textarea { resize: vertical; min-height: 80px; }
-  .share-list h2 { font-size: 20px; font-weight: 800; margin-bottom: 18px; }
+  .share-form h2 { font-size: 20px; font-weight: 800; margin-bottom: 20px; }
+  .share-form input, .share-form select, .share-form textarea {
+    width: 100%; padding: 13px 15px; font-size: 14px;
+    border: 1.5px solid var(--line); border-radius: 14px; outline: none;
+    margin-bottom: 14px; font-family: inherit; background: #fbfaf8;
+    transition: all .2s;
+  }
+  .share-form input:focus, .share-form textarea:focus, .share-form select:focus {
+    border-color: var(--accent); background: #fff; box-shadow: 0 0 0 4px rgba(255,90,78,0.08);
+  }
+  .share-form textarea { resize: vertical; min-height: 84px; }
+  .share-list h2 { font-size: 20px; font-weight: 800; margin-bottom: 20px; }
   .share-item {
     background: var(--card); border: 1px solid var(--line);
-    border-radius: 16px; padding: 18px; margin-bottom: 14px;
+    border-radius: 18px; padding: 20px; margin-bottom: 16px;
+    transition: all .2s; box-shadow: 0 4px 14px rgba(35,35,38,0.04);
   }
-  .share-item .si-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-  .share-item .si-name { font-weight: 700; font-size: 15px; }
-  .share-item .si-tag { font-size: 12px; color: var(--accent); font-weight: 600; }
+  .share-item:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .share-item .si-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .share-item .si-name { font-weight: 800; font-size: 15px; }
+  .share-item .si-tag {
+    font-size: 12px; color: var(--accent); font-weight: 700;
+    background: rgba(255,90,78,0.08); padding: 3px 10px; border-radius: 999px;
+  }
   .share-item p { font-size: 14px; color: var(--muted); }
 
-  .empty-list { color: var(--muted); text-align: center; padding: 40px 0; }
+  .empty-list { color: var(--muted); text-align: center; padding: 50px 0; font-size: 15px; }
 
   @media (max-width: 760px) {
     .creators { grid-template-columns: 1fr; }
     .share-grid { grid-template-columns: 1fr; }
     .num-row { flex-direction: column; }
     #styleGroup .choice { flex: 0 0 calc((100% - 12px) / 2); }
+    .form-card { padding: 28px 22px; }
   }
 </style>
 </head>
@@ -167,12 +247,12 @@
 
 <header>
   <div class="nav">
-    <div class="logo" onclick="goPage(0)">穿搭<span>指南</span></div>
+    <div class="logo" onclick="goPage(0)"><span class="logo-icon">✦</span>穿搭<span>指南</span></div>
     <div class="steps">
       <div class="step active" id="step1"><span class="step-num">1</span><span class="step-label">填写信息</span></div>
-      <span style="color:var(--line)">—</span>
+      <span class="step-divider">—</span>
       <div class="step" id="step2"><span class="step-num">2</span><span class="step-label">博主推荐</span></div>
-      <span style="color:var(--line)">—</span>
+      <span class="step-divider">—</span>
       <div class="step" id="step3"><span class="step-num">3</span><span class="step-label">分享穿搭</span></div>
     </div>
   </div>
@@ -277,13 +357,13 @@
 
 <script>
   const CREATORS = [
-    { name: "八号机", gender: "unisex", height: 160, styles: ["street"], desc: "男女通用街头穿搭，中性风酷感十足", avatar: "#c05a4f", douyinId: "buzzlightyear8zz", link: "https://www.douyin.com/search/buzzlightyear8zz?type=user", tags: ["通用","街头"] },
-    { name: "707", gender: "female", height: 160, styles: ["street"], desc: "街头风女生穿搭，酷感又日常", avatar: "#6b5ba8", douyinId: "DqNanA_707", link: "https://www.douyin.com/search/DqNanA_707?type=user", tags: ["街头","女生"] },
-    { name: "郑不凡", gender: "male", height: 160, styles: ["casual"], desc: "小个子男生休闲穿搭，舒适又有型", avatar: "#3f7c6b", douyinId: "Zf19970721", link: "https://www.douyin.com/search/Zf19970721?type=user", tags: ["休闲","男生"] },
-    { name: "痴五安", gender: "male", height: 160, styles: ["casual"], desc: "日常休闲男装穿搭，简约不单调", avatar: "#8a6b4f", douyinId: "chammy666", link: "https://v.douyin.com/xiJF8DFOjOw/", tags: ["日常","休闲"] },
-    { name: "活波人生", gender: "male", height: 170, styles: ["casual","street"], desc: "日常街头混搭男装，随性有个性", avatar: "#4f6b8a", douyinId: "faximsstore", link: "https://www.douyin.com/search/faximsstore?type=user", tags: ["日常","街头"] },
-    { name: "郭广大", gender: "male", height: 180, styles: ["trend"], desc: "高个子潮流穿搭，气场十足", avatar: "#8a4f6b", douyinId: "6576957", link: "https://www.douyin.com/search/6576957?type=user", tags: ["潮流","高个"] },
-    { name: "鱼仔不喝汤", gender: "male", height: 185, styles: ["street","trend"], desc: "街头潮流男装，型格十足", avatar: "#5b6b8a", douyinId: "76244170467", link: "https://www.douyin.com/search/76244170467?type=user", tags: ["街头","潮流"] },
+    { name: "八号机", gender: "unisex", height: 160, styles: ["street"], desc: "男女通用街头穿搭，中性风酷感十足", avatar: "#ff6b5a", douyinId: "buzzlightyear8zz", link: "https://www.douyin.com/search/buzzlightyear8zz?type=user", tags: ["通用","街头"] },
+    { name: "707", gender: "female", height: 160, styles: ["street"], desc: "街头风女生穿搭，酷感又日常", avatar: "#7c6bd6", douyinId: "DqNanA_707", link: "https://www.douyin.com/search/DqNanA_707?type=user", tags: ["街头","女生"] },
+    { name: "郑不凡", gender: "male", height: 160, styles: ["casual"], desc: "小个子男生休闲穿搭，舒适又有型", avatar: "#4fae8c", douyinId: "Zf19970721", link: "https://www.douyin.com/search/Zf19970721?type=user", tags: ["休闲","男生"] },
+    { name: "痴五安", gender: "male", height: 160, styles: ["casual"], desc: "日常休闲男装穿搭，简约不单调", avatar: "#e0a458", douyinId: "chammy666", link: "https://v.douyin.com/xiJF8DFOjOw/", tags: ["日常","休闲"] },
+    { name: "活波人生", gender: "male", height: 170, styles: ["casual","street"], desc: "日常街头混搭男装，随性有个性", avatar: "#5b8fd6", douyinId: "faximsstore", link: "https://www.douyin.com/search/faximsstore?type=user", tags: ["日常","街头"] },
+    { name: "郭广大", gender: "male", height: 180, styles: ["trend"], desc: "高个子潮流穿搭，气场十足", avatar: "#d66ba8", douyinId: "6576957", link: "https://www.douyin.com/search/6576957?type=user", tags: ["潮流","高个"] },
+    { name: "鱼仔不喝汤", gender: "male", height: 185, styles: ["street","trend"], desc: "街头潮流男装，型格十足", avatar: "#6b8ad6", douyinId: "76244170467", link: "https://www.douyin.com/search/76244170467?type=user", tags: ["街头","潮流"] },
   ];
 
   const STYLE_NAMES = { casual: "休闲", commute: "通勤", trend: "潮流", sport: "运动", campus: "学院风", minimal: "简约风", vintage: "复古风", formal: "职场风", date: "约会风", home: "居家风", street: "街头", party: "聚会", travel: "旅行度假", gala: "正式宴会", interview: "面试" };
@@ -341,13 +421,19 @@
     const list = document.getElementById("creatorList");
     list.innerHTML = fallback.map((c, i) => `
       <div class="creator">
-        <div class="creator-avatar" style="background:${c.avatar}">${c.name[0]}</div>
+        <div class="creator-avatar" style="background:linear-gradient(135deg, ${c.avatar}, ${shade(c.avatar)})">${c.name[0]}</div>
         <h3>${c.name}</h3>
         <p class="creator-desc">${c.desc}</p>
-        <div class="creator-meta">${c.tags.map(t => `<span>${t}</span>`).join("")}<span>身高 ${c.height}cm</span></div>
+        <div class="creator-meta">${c.tags.map(t => `<span>${t}</span>`).join("")}<span class="height-tag">身高 ${c.height}cm</span></div>
         <a class="creator-link" href="${c.link}" target="_blank" rel="noopener">抖音：${c.douyinId || "去搜索"} →</a>
       </div>
     `).join("");
+  }
+
+  function shade(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    const r = Math.min(255, (n >> 16) + 60), g = Math.min(255, ((n >> 8) & 0xff) + 40), b = Math.min(255, (n & 0xff) + 60);
+    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
   }
 
   function heightScore(c) {
