@@ -116,6 +116,55 @@
   }
   .hero-stat .lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
+  /* 天气穿搭卡片 */
+  .weather-card {
+    background: linear-gradient(135deg, #4a6cf7, #6a9bff);
+    border-radius: 22px; padding: 26px 28px; margin-bottom: 24px;
+    color: #fff; box-shadow: 0 12px 30px rgba(74,108,247,0.3);
+    animation: pageIn .5s cubic-bezier(.2,.8,.3,1);
+  }
+  .weather-card h2 { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+  .weather-card .wc-sub { font-size: 13px; opacity: 0.85; margin-bottom: 16px; }
+  .weather-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .weather-input {
+    flex: 1; min-width: 140px; padding: 13px 16px; font-size: 15px;
+    border: none; border-radius: 14px; outline: none; background: rgba(255,255,255,0.95);
+    color: var(--ink);
+  }
+  .weather-btn {
+    padding: 13px 24px; border: none; border-radius: 14px; cursor: pointer;
+    background: #fff; color: #4a6cf7; font-size: 14px; font-weight: 700;
+    transition: all .2s;
+  }
+  .weather-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
+  .weather-result {
+    margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.25);
+    display: none; font-size: 15px; line-height: 1.9;
+  }
+  .weather-result.show { display: block; animation: pageIn .3s ease; }
+  .weather-result strong { font-size: 17px; }
+  .weather-tip { font-size: 13px; opacity: 0.9; margin-top: 6px; }
+
+  /* 收藏夹 */
+  .fav-section { margin-top: 36px; }
+  .fav-section h2 {
+    font-size: 18px; font-weight: 800; margin-bottom: 16px; display: flex;
+    align-items: center; gap: 8px;
+  }
+  .fav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .fav-empty {
+    text-align: center; color: var(--muted); padding: 30px; font-size: 14px;
+    background: var(--card); border: 1px dashed var(--line); border-radius: 16px;
+  }
+  .fav-btn {
+    position: absolute; top: 14px; right: 14px; width: 34px; height: 34px;
+    border-radius: 50%; border: none; cursor: pointer; font-size: 17px;
+    background: rgba(255,255,255,0.9); color: var(--muted);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1); transition: all .2s; z-index: 2;
+  }
+  .fav-btn:hover { transform: scale(1.1); }
+  .fav-btn.active { color: #f5b301; }
+
   /* 表单卡片 */
   .form-card {
     background: var(--card); border: 1px solid var(--line);
@@ -372,6 +421,7 @@
     .style-item .choice { width: 72px; height: 72px; }
     .style-item .choice .choice-emoji { font-size: 22px; }
     .style-arrow { display: none; }
+    .fav-grid { grid-template-columns: 1fr; }
     .form-card { padding: 28px 22px; }
   }
 </style>
@@ -403,6 +453,16 @@
         <div class="hero-stat"><div class="num">15</div><div class="lbl">种穿搭风格</div></div>
         <div class="hero-stat"><div class="num">免费</div><div class="lbl">永久使用</div></div>
       </div>
+    </div>
+
+    <div class="weather-card">
+      <h2>☀️ 今天穿什么？</h2>
+      <p class="wc-sub">输入今天的温度，马上给你搭配建议</p>
+      <div class="weather-row">
+        <input class="weather-input" id="weatherTemp" type="number" placeholder="今天多少度？例如 25" min="-30" max="50">
+        <button class="weather-btn" onclick="showWeatherOutfit()">看看怎么穿</button>
+      </div>
+      <div class="weather-result" id="weatherResult"></div>
     </div>
 
     <div class="form-card">
@@ -469,6 +529,10 @@
       <div class="result-tags" id="resultTags"></div>
     </div>
     <div class="creators" id="creatorList"></div>
+    <div class="fav-section">
+      <h2>⭐ 我的收藏</h2>
+      <div class="fav-grid" id="favGrid"></div>
+    </div>
     <div class="btn-row" style="justify-content:center; margin-top:40px;">
       <button class="btn btn-ghost" onclick="goPage(0)">← 重新填写</button>
       <button class="btn btn-primary" onclick="goPage(2)">分享我的穿搭 →</button>
@@ -534,6 +598,53 @@
   let userInfo = { gender: "", height: 0, weight: 0, styles: [] };
   let shares = JSON.parse(localStorage.getItem("shares") || "[]");
   let pendingPhoto = "";
+  let favs = JSON.parse(localStorage.getItem("favs") || "[]");
+
+  const WEATHER_OUTFITS = [
+    { max: -5, title: "❄️ 极寒（-5° 以下）", outfit: "羽绒服 + 加绒内搭 + 厚毛衣 + 围巾手套", tip: "保暖第一，别要风度了" },
+    { max: 5, title: "🧊 寒冷（-5° ~ 5°）", outfit: "厚外套/棉服 + 毛衣 + 加绒长裤", tip: "叠穿三件，兼顾保暖和层次" },
+    { max: 12, title: "🍂 微凉（5° ~ 12°）", outfit: "风衣/夹克 + 长袖T恤/薄毛衣 + 直筒裤", tip: "轻便外套随时可脱" },
+    { max: 18, title: "🌥️ 舒适（12° ~ 18°）", outfit: "卫衣/针织衫 + 休闲裤 + 帆布鞋", tip: "这个温度最好穿，怎么搭都行" },
+    { max: 25, title: "☀️ 温暖（18° ~ 25°）", outfit: "短袖/衬衫 + 薄外套 + 牛仔裤", tip: "早晚温差大，带件薄外套" },
+    { max: 32, title: "🔥 炎热（25° ~ 32°）", outfit: "纯色短袖 + 短裤/薄长裤 + 透气鞋", tip: "浅色系显清爽，吸汗面料优先" },
+    { max: 99, title: "🥵 酷暑（32° 以上）", outfit: "背心/薄T恤 + 宽松短裤", tip: "别穿深色，越透气越好" }
+  ];
+
+  function showWeatherOutfit() {
+    const t = parseFloat(document.getElementById("weatherTemp").value);
+    const box = document.getElementById("weatherResult");
+    if (isNaN(t)) { box.innerHTML = `<strong>请输入温度哦～</strong>`; box.classList.add("show"); return; }
+    const item = WEATHER_OUTFITS.find(w => t <= w.max);
+    const g = userInfo.gender ? (userInfo.gender === "male" ? "男生" : "女生") : "";
+    box.innerHTML = `<strong>${item.title}</strong><br>💡 ${g ? g + "推荐：" : ""}${item.outfit}<div class="weather-tip">✨ ${item.tip}</div>`;
+    box.classList.add("show");
+  }
+
+  function toggleFav(name) {
+    const i = favs.indexOf(name);
+    if (i >= 0) favs.splice(i, 1); else favs.push(name);
+    localStorage.setItem("favs", JSON.stringify(favs));
+    renderFavs();
+    const btn = document.querySelector(`.fav-btn[data-fav="${name}"]`);
+    if (btn) btn.classList.toggle("active", i < 0);
+  }
+
+  function renderFavs() {
+    const grid = document.getElementById("favGrid");
+    const list = CREATORS.filter(c => favs.includes(c.name));
+    if (list.length === 0) {
+      grid.innerHTML = `<div class="fav-empty">还没收藏博主。看到喜欢的，点卡片右上角的 ☆ 收藏，下次直接看～</div>`;
+      return;
+    }
+    grid.innerHTML = list.map(c => `
+      <div class="creator" style="padding:20px 16px;">
+        <div class="creator-avatar" style="background:linear-gradient(135deg, ${c.avatar}, ${shade(c.avatar)})">${c.name[0]}</div>
+        <h3>${c.name}</h3>
+        <p class="creator-desc">${c.desc}</p>
+        <a class="creator-link" href="${c.link}" target="_blank" rel="noopener">${c.douyinId ? "抖音：" + c.douyinId + " →" : "博主主页 →"}</a>
+      </div>
+    `).join("");
+  }
 
   document.getElementById("statCreators").textContent = CREATORS.length;
 
@@ -625,6 +736,7 @@
       : "";
     list.innerHTML = note + fallback.map((c, i) => `
       <div class="creator">
+        <button class="fav-btn${favs.includes(c.name) ? " active" : ""}" data-fav="${c.name}" onclick="toggleFav('${c.name}')">${favs.includes(c.name) ? "★" : "☆"}</button>
         <div class="creator-avatar" style="background:linear-gradient(135deg, ${c.avatar}, ${shade(c.avatar)})">${c.name[0]}</div>
         <h3>${c.name}</h3>
         <p class="creator-desc">${c.desc}</p>
@@ -698,6 +810,7 @@
   initChoices();
   loadPrefs();
   renderShares();
+  renderFavs();
 </script>
 
 </body>
