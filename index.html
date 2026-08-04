@@ -142,42 +142,56 @@
   #genderGroup .choice[data-val="male"] .choice-emoji { color: #3b82f6; filter: none; }
   #genderGroup .choice[data-val="female"] .choice-emoji { color: #ec4899; filter: none; }
 
-  /* 蜂窝样式（Apple Watch 风格） */
-  #styleGroup { display: block; }
-  .hex-row { display: flex; justify-content: center; gap: 14px; margin-bottom: -8px; }
-  .hex-row.shift { margin-left: 52px; }
-  .hex-row:last-child { margin-bottom: 0; }
-  #styleGroup .choice {
-    flex: none; width: 100px; height: 100px;
+  /* 风格横向滑动条 */
+  .style-scroll-wrap { position: relative; }
+  .style-scroll {
+    display: flex; gap: 16px; overflow-x: auto;
+    padding: 14px 8px 20px; scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .style-scroll::-webkit-scrollbar { display: none; }
+  .style-item { flex: none; scroll-snap-align: center; }
+  .style-item .choice {
+    flex: none; width: 90px; height: 90px;
     text-align: center; padding: 0;
     border: 1.5px solid var(--line); border-radius: 50%;
-    font-size: 14px; cursor: pointer;
+    font-size: 13px; cursor: pointer;
     background: var(--card);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     box-shadow: 0 3px 8px rgba(35,35,38,0.08), inset 0 -2px 4px rgba(35,35,38,0.06);
     transition: all .2s ease; position: relative;
   }
-  #styleGroup .choice .choice-emoji {
-    display: block; font-size: 28px; line-height: 1; margin-bottom: 5px;
+  .style-item .choice .choice-emoji {
+    display: block; font-size: 26px; line-height: 1; margin-bottom: 4px;
     filter: grayscale(20%); transition: transform .2s;
   }
-  #styleGroup .choice:hover {
-    border-color: var(--accent2);
-    transform: translateY(-7px);
-    box-shadow: 0 14px 24px rgba(255,138,92,0.35), inset 0 -3px 6px rgba(35,35,38,0.1);
-  }
-  #styleGroup .choice:hover .choice-emoji { transform: scale(1.12); }
-  #styleGroup .choice.selected {
+  .style-item .choice:hover { border-color: var(--accent2); transform: translateY(-5px); box-shadow: 0 12px 22px rgba(255,138,92,0.3); }
+  .style-item .choice:hover .choice-emoji { transform: scale(1.1); }
+  .style-item .choice.selected {
     border-color: transparent; color: #fff; font-weight: 700;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
     box-shadow: 0 12px 26px rgba(255,90,78,0.4), inset 0 -4px 8px rgba(0,0,0,0.15);
   }
-  #styleGroup .choice.selected .choice-emoji { transform: scale(1.1); filter: grayscale(0%); }
-  #styleGroup .choice .ch-desc {
-    display: block; font-size: 11px; color: var(--muted);
+  .style-item .choice.selected .choice-emoji { transform: scale(1.08); filter: grayscale(0%); }
+  .style-item .choice .ch-desc {
+    display: block; font-size: 10px; color: var(--muted);
     font-weight: 400; margin-top: 2px; line-height: 1.2; transition: color .2s;
   }
-  #styleGroup .choice.selected .ch-desc { color: rgba(255,255,255,0.9); }
+  .style-item .choice.selected .ch-desc { color: rgba(255,255,255,0.9); }
+  .style-fade-left, .style-fade-right {
+    position: absolute; top: 0; bottom: 20px; width: 40px; pointer-events: none;
+    z-index: 2;
+  }
+  .style-fade-left {
+    left: 0; background: linear-gradient(to right, var(--bg), transparent);
+  }
+  .style-fade-right {
+    right: 0; background: linear-gradient(to left, var(--bg), transparent);
+  }
+  .style-hint {
+    text-align: center; font-size: 12px; color: var(--muted);
+    margin-top: -6px; opacity: 0.8;
+  }
 
   /* 通用选择按钮（性别等） */
   .choice {
@@ -345,11 +359,8 @@
     .creators { grid-template-columns: 1fr; }
     .share-grid { grid-template-columns: 1fr; }
     .num-row { flex-direction: column; }
-    #styleGroup .choice { width: 56px; height: 56px; }
-    .hex-row { gap: 8px; margin-bottom: -5px; }
-    .hex-row.shift { margin-left: 28px; }
-    #styleGroup .choice .choice-emoji { font-size: 20px; margin-bottom: 2px; }
-    #styleGroup .choice .ch-desc { font-size: 9px; }
+    .style-item .choice { width: 72px; height: 72px; }
+    .style-item .choice .choice-emoji { font-size: 22px; }
     .form-card { padding: 28px 22px; }
   }
 </style>
@@ -411,24 +422,23 @@
 
       <div class="field">
         <label>喜欢的风格（可多选）</label>
-        <div class="choice-group" id="styleGroup">
-          <div class="hex-row">
-            <div class="choice" data-val="casual"><span class="choice-emoji">👕</span>休闲<small class="ch-desc">日常舒适</small></div>
-            <div class="choice" data-val="commute"><span class="choice-emoji">💼</span>通勤<small class="ch-desc">上班上学</small></div>
-            <div class="choice" data-val="campus"><span class="choice-emoji">🎓</span>学院风<small class="ch-desc">青春校园</small></div>
-            <div class="choice" data-val="minimal"><span class="choice-emoji">🤍</span>简约风<small class="ch-desc">干净利落</small></div>
+        <div class="style-scroll-wrap">
+          <div class="style-scroll" id="styleGroup">
+            <div class="style-item"><div class="choice" data-val="casual"><span class="choice-emoji">👕</span>休闲<small class="ch-desc">日常舒适</small></div></div>
+            <div class="style-item"><div class="choice" data-val="commute"><span class="choice-emoji">💼</span>通勤<small class="ch-desc">上班上学</small></div></div>
+            <div class="style-item"><div class="choice" data-val="campus"><span class="choice-emoji">🎓</span>学院风<small class="ch-desc">青春校园</small></div></div>
+            <div class="style-item"><div class="choice" data-val="minimal"><span class="choice-emoji">🤍</span>简约风<small class="ch-desc">干净利落</small></div></div>
+            <div class="style-item"><div class="choice" data-val="vintage"><span class="choice-emoji">🕰️</span>复古风<small class="ch-desc">怀旧质感</small></div></div>
+            <div class="style-item"><div class="choice" data-val="formal"><span class="choice-emoji">🤵</span>职场风<small class="ch-desc">专业正式</small></div></div>
+            <div class="style-item"><div class="choice" data-val="date"><span class="choice-emoji">🌹</span>约会风<small class="ch-desc">精致有型</small></div></div>
+            <div class="style-item"><div class="choice" data-val="street"><span class="choice-emoji">🛹</span>街头<small class="ch-desc">嘻哈潮流</small></div></div>
+            <div class="style-item"><div class="choice" data-val="party"><span class="choice-emoji">🎉</span>聚会<small class="ch-desc">热闹出彩</small></div></div>
+            <div class="style-item"><div class="choice" data-val="travel"><span class="choice-emoji">✈️</span>旅行度假<small class="ch-desc">轻松出行</small></div></div>
+            <div class="style-item"><div class="choice" data-val="gala"><span class="choice-emoji">👑</span>正式宴会<small class="ch-desc">隆重场合</small></div></div>
           </div>
-          <div class="hex-row shift">
-            <div class="choice" data-val="vintage"><span class="choice-emoji">🕰️</span>复古风<small class="ch-desc">怀旧质感</small></div>
-            <div class="choice" data-val="formal"><span class="choice-emoji">🤵</span>职场风<small class="ch-desc">专业正式</small></div>
-            <div class="choice" data-val="date"><span class="choice-emoji">🌹</span>约会风<small class="ch-desc">精致有型</small></div>
-            <div class="choice" data-val="street"><span class="choice-emoji">🛹</span>街头<small class="ch-desc">嘻哈潮流</small></div>
-          </div>
-          <div class="hex-row">
-            <div class="choice" data-val="party"><span class="choice-emoji">🎉</span>聚会<small class="ch-desc">热闹出彩</small></div>
-            <div class="choice" data-val="travel"><span class="choice-emoji">✈️</span>旅行度假<small class="ch-desc">轻松出行</small></div>
-            <div class="choice" data-val="gala"><span class="choice-emoji">👑</span>正式宴会<small class="ch-desc">隆重场合</small></div>
-          </div>
+          <div class="style-fade-left"></div>
+          <div class="style-fade-right"></div>
+          <div class="style-hint">← 左右滑动查看更多 →</div>
         </div>
       </div>
 
