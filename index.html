@@ -104,6 +104,8 @@
   #genderGroup { justify-content: center; gap: 30px; }
   #genderGroup .choice { flex: none; width: 120px; height: 120px; min-width: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; }
   #genderGroup .choice .choice-emoji { font-size: 42px; margin-bottom: 4px; }
+  #genderGroup .choice[data-val="male"] .choice-emoji { color: #3b82f6; filter: none; }
+  #genderGroup .choice[data-val="female"] .choice-emoji { color: #ec4899; filter: none; }
 
   /* 蜂窝样式（Apple Watch 风格） */
   #styleGroup { display: block; }
@@ -313,8 +315,8 @@
       <div class="field">
         <label>你的性别</label>
         <div class="choice-group" id="genderGroup">
-          <div class="choice" data-val="male"><span class="choice-emoji">♂</span>男生<small class="ch-desc">男士</small></div>
-          <div class="choice" data-val="female"><span class="choice-emoji">♀</span>女生<small class="ch-desc">女士</small></div>
+          <div class="choice" data-val="male"><span class="choice-emoji">♂</span></div>
+          <div class="choice" data-val="female"><span class="choice-emoji">♀</span></div>
         </div>
       </div>
 
