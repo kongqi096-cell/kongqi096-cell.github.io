@@ -456,9 +456,9 @@
     const matched = CREATORS.filter(c =>
       (c.gender === userInfo.gender || c.gender === "unisex") &&
       c.styles.some(s => userInfo.styles.includes(s))
-    ).sort((a, b) => heightScore(a) - heightScore(b));
+    );
     const fallback = matched.length === 0
-      ? CREATORS.filter(c => c.gender === userInfo.gender || c.gender === "unisex").sort((a, b) => heightScore(a) - heightScore(b))
+      ? CREATORS.filter(c => c.gender === userInfo.gender || c.gender === "unisex")
       : matched;
 
     document.getElementById("resultSummary").textContent =
@@ -483,10 +483,6 @@
     const n = parseInt(hex.slice(1), 16);
     const r = Math.min(255, (n >> 16) + 60), g = Math.min(255, ((n >> 8) & 0xff) + 40), b = Math.min(255, (n & 0xff) + 60);
     return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
-  }
-
-  function heightScore(c) {
-    return Math.abs(c.height - userInfo.height);
   }
 
   function goPage(n) {
