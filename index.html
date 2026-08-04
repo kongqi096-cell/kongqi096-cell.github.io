@@ -172,6 +172,43 @@
   }
   .notice-bar strong { color: var(--accent); }
 
+  /* 穿搭挑战 */
+  .challenge-card {
+    background: linear-gradient(135deg, #8b5cf6, #c084fc);
+    border-radius: 22px; padding: 24px 28px; margin-bottom: 24px;
+    color: #fff; box-shadow: 0 12px 30px rgba(139,92,246,0.3);
+  }
+  .challenge-card .ch-label {
+    font-size: 12px; font-weight: 700; letter-spacing: 1px; opacity: 0.85; margin-bottom: 6px;
+  }
+  .challenge-card .ch-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+  .challenge-card .ch-desc { font-size: 14px; opacity: 0.92; margin-bottom: 14px; line-height: 1.7; }
+  .challenge-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .challenge-btn {
+    padding: 11px 20px; border: none; border-radius: 999px; cursor: pointer;
+    background: #fff; color: #8b5cf6; font-size: 14px; font-weight: 700;
+    transition: all .2s;
+  }
+  .challenge-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
+  .challenge-entries { margin-top: 16px; }
+  .challenge-entry {
+    background: rgba(255,255,255,0.12); border-radius: 14px; padding: 14px 16px;
+    margin-bottom: 10px; backdrop-filter: blur(4px);
+  }
+  .challenge-entry .ce-head { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .challenge-entry .ce-text { font-size: 13px; opacity: 0.92; }
+  .challenge-entry .ce-time { font-size: 11px; opacity: 0.7; }
+  .challenge-empty { font-size: 13px; opacity: 0.8; }
+
+  /* 点赞通知气泡 */
+  .toast {
+    position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    background: var(--ink); color: #fff; padding: 12px 24px; border-radius: 999px;
+    font-size: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); z-index: 999;
+    opacity: 0; transition: all .3s ease; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
   /* 收藏夹 */
   .fav-section { margin-top: 36px; }
   .fav-section h2 {
@@ -581,6 +618,17 @@
 
   <!-- 第 3 页：分享 -->
   <section class="page" id="page2">
+    <div class="challenge-card">
+      <div class="ch-label">🏆 本周穿搭挑战</div>
+      <div class="ch-title" id="challengeTitle"></div>
+      <div class="ch-desc" id="challengeDesc"></div>
+      <div class="challenge-row">
+        <button class="challenge-btn" onclick="goChallenge()">我投稿</button>
+        <button class="challenge-btn" onclick="scrollToShareForm()">去看大家的投稿</button>
+      </div>
+      <div class="challenge-entries" id="challengeEntries"></div>
+    </div>
+
     <div class="share-grid">
       <div class="share-form">
         <h2>分享你的穿搭</h2>
@@ -824,6 +872,65 @@
     window.scrollTo({ top: 0 });
   }
 
+  function showToast(msg) {
+    let t = document.getElementById("toast");
+    if (!t) {
+      t = document.createElement("div");
+      t.id = "toast";
+      t.className = "toast";
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove("show"), 2500);
+  }
+
+  const CHALLENGES = [
+    { title: "周末通勤装", desc: "上班也能穿得好看。分享你的一周通勤造型，让上班族不再为穿衣发愁！" },
+    { title: "显高穿搭", desc: "小个子也能有大长腿！分享你的显高技巧和穿搭，教大家怎么穿出比例。" },
+    { title: "街头潮流风", desc: "街头风不是年轻人的专利！分享你的街头潮流穿搭，潮起来不分年龄。" },
+    { title: "约会精致风", desc: "约会穿什么最加分？分享你的约会穿搭，帮大家搞定重要场合。" },
+  ];
+  let challengeEntries = JSON.parse(localStorage.getItem("challengeEntries") || "[]");
+
+  function showChallenge() {
+    const week = Math.floor(Date.now() / (7 * 24 * 3600 * 1000));
+    const ch = CHALLENGES[week % CHALLENGES.length];
+    document.getElementById("challengeTitle").textContent = ch.title;
+    document.getElementById("challengeDesc").textContent = ch.desc;
+    renderChallengeEntries();
+  }
+
+  function renderChallengeEntries() {
+    const box = document.getElementById("challengeEntries");
+    if (challengeEntries.length === 0) {
+      box.innerHTML = `<div class="challenge-empty">还没有投稿，快成为第一个吧！</div>`;
+      return;
+    }
+    box.innerHTML = challengeEntries.map(e => `
+      <div class="challenge-entry">
+        <div class="ce-head"><span>👤 ${e.name}</span><span class="ce-time">${e.time}</span></div>
+        <div class="ce-text">${e.text}</div>
+      </div>
+    `).join("");
+  }
+
+  function goChallenge() {
+    const name = prompt("你的昵称：");
+    if (!name) return;
+    const text = prompt("分享你的挑战穿搭：");
+    if (!text) return;
+    challengeEntries.unshift({ name, text, time: new Date().toLocaleDateString() });
+    localStorage.setItem("challengeEntries", JSON.stringify(challengeEntries));
+    renderChallengeEntries();
+    showToast("🎉 投稿成功！你的穿搭已加入本周挑战");
+  }
+
+  function scrollToShareForm() {
+    document.getElementById("shareName").scrollIntoView({ behavior: "smooth" });
+  }
+
   function submitShare() {
     const name = document.getElementById("shareName").value.trim();
     const style = document.getElementById("shareStyle").value;
@@ -842,10 +949,12 @@
   }
 
   function toggleLike(i) {
+    const wasLiked = shares[i].liked;
     shares[i].liked = !shares[i].liked;
     shares[i].likes += shares[i].liked ? 1 : -1;
     localStorage.setItem("shares", JSON.stringify(shares));
     renderShares();
+    if (!wasLiked) showToast(`❤️ 你点赞了 ${shares[i].name} 的穿搭`);
   }
 
   function renderShares() {
@@ -876,6 +985,7 @@
   renderFavs();
   showDailyInspo();
   showNotice();
+  showChallenge();
 </script>
 
 </body>
