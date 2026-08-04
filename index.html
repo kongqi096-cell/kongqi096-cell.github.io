@@ -192,6 +192,16 @@
     text-align: center; font-size: 12px; color: var(--muted);
     margin-top: -6px; opacity: 0.8;
   }
+  .style-arrow {
+    position: absolute; top: 38px; transform: translateY(-50%);
+    width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--line);
+    background: var(--card); color: var(--ink); font-size: 20px;
+    cursor: pointer; z-index: 3; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 10px rgba(35,35,38,0.1); transition: all .2s; line-height: 1;
+  }
+  .style-arrow:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .style-arrow-left { left: -4px; }
+  .style-arrow-right { right: -4px; }
 
   /* 通用选择按钮（性别等） */
   .choice {
@@ -361,6 +371,7 @@
     .num-row { flex-direction: column; }
     .style-item .choice { width: 72px; height: 72px; }
     .style-item .choice .choice-emoji { font-size: 22px; }
+    .style-arrow { display: none; }
     .form-card { padding: 28px 22px; }
   }
 </style>
@@ -438,7 +449,9 @@
           </div>
           <div class="style-fade-left"></div>
           <div class="style-fade-right"></div>
-          <div class="style-hint">← 左右滑动查看更多 →</div>
+          <button class="style-arrow style-arrow-left" onclick="scrollStyles(-1)">‹</button>
+          <button class="style-arrow style-arrow-right" onclick="scrollStyles(1)">›</button>
+          <div class="style-hint" id="styleHint">← 左右滑动查看更多 →</div>
         </div>
       </div>
 
@@ -523,6 +536,11 @@
   let pendingPhoto = "";
 
   document.getElementById("statCreators").textContent = CREATORS.length;
+
+  function scrollStyles(dir) {
+    const scroller = document.getElementById("styleGroup");
+    scroller.scrollBy({ left: dir * 220, behavior: "smooth" });
+  }
 
   function initChoices() {
     document.querySelectorAll(".choice-group").forEach(group => {
