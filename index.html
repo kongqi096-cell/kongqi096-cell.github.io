@@ -104,33 +104,33 @@
 
   /* 蜂窝样式（Apple Watch 风格） */
   #styleGroup { display: block; }
-  .hex-row { display: flex; justify-content: center; gap: 10px; margin-bottom: -12px; }
+  .hex-row { display: flex; justify-content: center; gap: 14px; margin-bottom: -8px; }
   .hex-row.shift { margin-left: 52px; }
   .hex-row:last-child { margin-bottom: 0; }
   #styleGroup .choice {
-    flex: none; width: 106px; height: 96px;
-    text-align: center; padding: 0 6px;
-    border: 1.5px solid var(--line); border-radius: 0;
+    flex: none; width: 100px; height: 100px;
+    text-align: center; padding: 0;
+    border: 1.5px solid var(--line); border-radius: 50%;
     font-size: 14px; cursor: pointer;
     background: var(--card);
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    transition: all .18s ease; position: relative;
+    box-shadow: 0 3px 8px rgba(35,35,38,0.08), inset 0 -2px 4px rgba(35,35,38,0.06);
+    transition: all .2s ease; position: relative;
   }
   #styleGroup .choice .choice-emoji {
     display: block; font-size: 28px; line-height: 1; margin-bottom: 5px;
     filter: grayscale(20%); transition: transform .2s;
   }
   #styleGroup .choice:hover {
-    transform: scale(1.06);
     border-color: var(--accent2);
-    box-shadow: 0 8px 18px rgba(255,138,92,0.25);
+    transform: translateY(-7px);
+    box-shadow: 0 14px 24px rgba(255,138,92,0.35), inset 0 -3px 6px rgba(35,35,38,0.1);
   }
   #styleGroup .choice:hover .choice-emoji { transform: scale(1.12); }
   #styleGroup .choice.selected {
     border-color: transparent; color: #fff; font-weight: 700;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
-    box-shadow: 0 10px 24px rgba(255,90,78,0.35);
+    box-shadow: 0 12px 26px rgba(255,90,78,0.4), inset 0 -4px 8px rgba(0,0,0,0.15);
   }
   #styleGroup .choice.selected .choice-emoji { transform: scale(1.1); filter: grayscale(0%); }
   #styleGroup .choice .ch-desc {
@@ -277,8 +277,8 @@
     .creators { grid-template-columns: 1fr; }
     .share-grid { grid-template-columns: 1fr; }
     .num-row { flex-direction: column; }
-    #styleGroup .choice { width: 88px; height: 80px; }
-    .hex-row.shift { margin-left: 44px; }
+    #styleGroup .choice { width: 84px; height: 84px; }
+    .hex-row.shift { margin-left: 42px; }
     .form-card { padding: 28px 22px; }
   }
 </style>
