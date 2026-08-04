@@ -201,17 +201,17 @@
   .style-scroll::-webkit-scrollbar { display: none; }
   .style-item { flex: none; scroll-snap-align: center; }
   .style-item .choice {
-    flex: none; width: 90px; height: 90px;
+    flex: none; width: 76px; height: 76px;
     text-align: center; padding: 0;
     border: 1.5px solid var(--line); border-radius: 50%;
-    font-size: 13px; cursor: pointer;
+    font-size: 12px; cursor: pointer;
     background: var(--card);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     box-shadow: 0 3px 8px rgba(35,35,38,0.08), inset 0 -2px 4px rgba(35,35,38,0.06);
     transition: all .2s ease; position: relative;
   }
   .style-item .choice .choice-emoji {
-    display: block; font-size: 26px; line-height: 1; margin-bottom: 4px;
+    display: block; font-size: 22px; line-height: 1; margin-bottom: 3px;
     filter: grayscale(20%); transition: transform .2s;
   }
   .style-item .choice:hover { border-color: var(--accent2); transform: translateY(-5px); box-shadow: 0 12px 22px rgba(255,138,92,0.3); }
@@ -418,8 +418,9 @@
     .creators { grid-template-columns: 1fr; }
     .share-grid { grid-template-columns: 1fr; }
     .num-row { flex-direction: column; }
-    .style-item .choice { width: 72px; height: 72px; }
-    .style-item .choice .choice-emoji { font-size: 22px; }
+    .style-item .choice { width: 60px; height: 60px; }
+    .style-item .choice .choice-emoji { font-size: 18px; }
+    .style-scroll { gap: 12px; }
     .style-arrow { display: none; }
     .fav-grid { grid-template-columns: 1fr; }
     .form-card { padding: 28px 22px; }
@@ -658,14 +659,15 @@
       group.addEventListener("click", e => {
         const c = e.target.closest(".choice");
         if (!c) return;
-        const multi = c.closest("#styleGroup");
-        if (multi) {
-          c.classList.toggle("selected");
-        } else {
-          c.parentElement.querySelectorAll(".choice").forEach(x => x.classList.remove("selected"));
-          c.classList.add("selected");
-        }
+        c.parentElement.querySelectorAll(".choice").forEach(x => x.classList.remove("selected"));
+        c.classList.add("selected");
       });
+    });
+
+    document.getElementById("styleGroup").addEventListener("click", e => {
+      const c = e.target.closest(".choice");
+      if (!c) return;
+      c.classList.toggle("selected");
     });
 
     document.getElementById("sharePhoto").addEventListener("change", e => {
