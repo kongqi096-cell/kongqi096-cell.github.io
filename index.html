@@ -145,6 +145,33 @@
   .weather-result strong { font-size: 17px; }
   .weather-tip { font-size: 13px; opacity: 0.9; margin-top: 6px; }
 
+  /* 每日灵感卡片 */
+  .daily-card {
+    background: linear-gradient(135deg, #f6a821, #ff8a5c);
+    border-radius: 22px; padding: 24px 28px; margin-bottom: 16px;
+    color: #fff; box-shadow: 0 12px 30px rgba(246,168,33,0.25);
+    animation: pageIn .5s cubic-bezier(.2,.8,.3,1);
+  }
+  .daily-card .dc-label {
+    font-size: 12px; font-weight: 700; letter-spacing: 1px; opacity: 0.85; margin-bottom: 6px;
+  }
+  .daily-card .dc-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+  .daily-card .dc-outfit { font-size: 15px; line-height: 1.8; opacity: 0.95; }
+  .daily-card .dc-tip { font-size: 13px; opacity: 0.85; margin-top: 6px; }
+
+  /* 新博主提醒 */
+  .notice-bar {
+    background: rgba(255,255,255,0.85); border: 1px solid var(--line);
+    border-radius: 14px; padding: 12px 18px; margin-bottom: 20px;
+    font-size: 14px; color: var(--ink); display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 4px 14px rgba(35,35,38,0.05); animation: pageIn .5s ease;
+  }
+  .notice-bar .nb-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex: none;
+    background: var(--accent); box-shadow: 0 0 0 4px rgba(255,90,78,0.15);
+  }
+  .notice-bar strong { color: var(--accent); }
+
   /* 收藏夹 */
   .fav-section { margin-top: 36px; }
   .fav-section h2 {
@@ -456,6 +483,18 @@
       </div>
     </div>
 
+    <div class="daily-card">
+      <div class="dc-label">✨ 今日穿搭灵感</div>
+      <div class="dc-title" id="dailyTitle"></div>
+      <div class="dc-outfit" id="dailyOutfit"></div>
+      <div class="dc-tip" id="dailyTip"></div>
+    </div>
+
+    <div class="notice-bar">
+      <span class="nb-dot"></span>
+      <span id="noticeText">🎉 本周新增博主，快来发现新风格吧～</span>
+    </div>
+
     <div class="weather-card">
       <h2>☀️ 今天穿什么？</h2>
       <p class="wc-sub">输入今天的温度，马上给你搭配建议</p>
@@ -610,6 +649,28 @@
     { max: 32, title: "🔥 炎热（25° ~ 32°）", outfit: "纯色短袖 + 短裤/薄长裤 + 透气鞋", tip: "浅色系显清爽，吸汗面料优先" },
     { max: 99, title: "🥵 酷暑（32° 以上）", outfit: "背心/薄T恤 + 宽松短裤", tip: "别穿深色，越透气越好" }
   ];
+
+  const DAILY_INSPO = [
+    { title: "一周不重样：白 T 恤的 7 种穿法", outfit: "今天来学「白T + 牛仔外套 + 直筒裤」，干净又减龄", tip: "白T是最百搭的单品，怎么搭都不出错" },
+    { title: "显高秘诀：把腰线找回来", outfit: "试试「短上衣 + 高腰裤」，视觉上瞬间拉长比例", tip: "塞衣角、系腰带，都是瞬间显高的小技巧" },
+    { title: "色彩公式：三色原则", outfit: "全身不超过 3 个颜色：「中性色打底 + 一个亮色点缀」", tip: "黑白灰随便搭，加一个亮色就出彩" },
+    { title: "通勤不踩雷：正式又舒适", outfit: "「衬衫 + 针织开衫 + 西裤」，办公室最稳组合", tip: "怕冷就叠穿，温度风度两不误" },
+    { title: "约会加分：轻松又有型", outfit: "「修身针织衫 + 半裙/直筒裤」，温柔显气质", tip: "浅色系更柔和，配一双好鞋就到位" },
+    { title: "周末出街：街头感穿搭", outfit: "「宽松卫衣 + 工装裤 + 板鞋」，街头休闲风", tip: "宽松有型，配顶帽子更有感觉" },
+    { title: "叠穿进阶：层次感穿搭", outfit: "「T恤 + 衬衫 + 夹克」，三层叠穿有层次", tip: "颜色由浅到深，层次更分明" }
+  ];
+
+  function showDailyInspo() {
+    const idx = new Date().getDate() % DAILY_INSPO.length;
+    const item = DAILY_INSPO[idx];
+    document.getElementById("dailyTitle").textContent = item.title;
+    document.getElementById("dailyOutfit").textContent = item.outfit;
+    document.getElementById("dailyTip").textContent = "💡 " + item.tip;
+  }
+
+  function showNotice() {
+    document.getElementById("noticeText").innerHTML = `🎉 本周新增 <strong>${Math.min(CREATORS.length, 5)}</strong> 位穿搭博主，快来发现新风格～`;
+  }
 
   function showWeatherOutfit() {
     const t = parseFloat(document.getElementById("weatherTemp").value);
@@ -813,6 +874,8 @@
   loadPrefs();
   renderShares();
   renderFavs();
+  showDailyInspo();
+  showNotice();
 </script>
 
 </body>
